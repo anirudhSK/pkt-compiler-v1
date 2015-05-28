@@ -20,6 +20,11 @@ AC_CHECK_HEADERS([algorithm array cassert cmath queue \
 cstdio string sys/stat.h sys/types.h ctime tuple unistd.h unordered_map \
 utility vector], [], [AC_MSG_ERROR([Missing header file])])
 
+# Check for clang
+AC_PATH_PROG([CLANG], [clang], [])
+AS_IF([test x"$CLANG" = x],
+[AC_MSG_ERROR([cannot find clang])])
+
 # C++ libraries are harder to check (http://nerdland.net/2009/07/detecting-c-libraries-with-autotools/),
 # so use headers to check
 AC_CHECK_HEADER([llvm/Pass.h], [], [AC_MSG_ERROR([LLVM headers not found])])
