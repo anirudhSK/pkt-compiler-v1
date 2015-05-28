@@ -20,6 +20,10 @@ AC_CHECK_HEADERS([algorithm array cassert cmath queue \
 cstdio string sys/stat.h sys/types.h ctime tuple unistd.h unordered_map \
 utility vector], [], [AC_MSG_ERROR([Missing header file])])
 
+# C++ libraries are harder to check (http://nerdland.net/2009/07/detecting-c-libraries-with-autotools/),
+# so use headers to check
+AC_CHECK_HEADER([llvm/Pass.h], [], [AC_MSG_ERROR([LLVM headers not found])])
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 AC_TYPE_UINT64_T
