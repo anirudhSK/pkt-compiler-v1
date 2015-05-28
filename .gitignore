@@ -17,3 +17,7 @@ libtool
 ltmain.sh
 missing
 stamp-h1
+.libs/
+hello.lo
+hello.o
+libjayhawk.la
