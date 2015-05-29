@@ -1,0 +1,9 @@
+To build:
+
+sudo apt-get update
+sudo apt-get install clang llvm-dev autotools-dev dh-autoreconf git
+git clone https://github.com/anirudhsk/jayhawk
+cd jayhawk
+./autogen.sh
+./configure
+make
