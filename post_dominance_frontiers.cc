@@ -17,8 +17,8 @@ namespace {
         dominance_frontiers_() {}
 
     bool runOnFunction(Function &) override {
-      dominance_frontiers_.calculate(*getAnalysis<PostDominatorTree>().DT,
-                                     getAnalysis<PostDominatorTree>().DT->getRootNode());
+      dominance_frontiers_.calculate(getAnalysis<DominatorTreeWrapperPass>().getDomTree(),
+                                     getAnalysis<DominatorTreeWrapperPass>().getDomTree().getRootNode());
       std::cout << "Printing out post dominance frontier\n";
       dominance_frontiers_.print(errs());
       return false;
@@ -26,7 +26,7 @@ namespace {
 
     void getAnalysisUsage(AnalysisUsage &AU) const override {
       AU.setPreservesAll();
-      AU.addRequired<PostDominatorTree>();
+      AU.addRequired<DominatorTreeWrapperPass>();
     }
 
    private:
