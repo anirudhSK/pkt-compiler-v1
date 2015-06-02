@@ -1,7 +1,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Pass.h"
 #include "llvm/IR/Function.h"
-
+#include "llvm/IR/InstrTypes.h"
 using namespace llvm;
 
 namespace {
@@ -11,7 +11,9 @@ namespace {
     bool runOnFunction(Function & func __attribute__((unused))) override {
       // Iterate over all basic blocks in the function
       for (auto it = func.begin(); it != func.end(); it++) {
-        errs() << "Basic block: " << *it << "\n";
+        errs() << "Basic block: " << *it << " terminator is ";
+        it->getTerminator()->print(errs());
+        errs() << "\n";
       }
       return false;
     }
