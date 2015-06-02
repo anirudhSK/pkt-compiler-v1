@@ -1,4 +1,4 @@
-To build:
+To build (Steps tested on Ubuntu 14.10, using EC2 AMI: ubuntu-utopic-14.10-amd64-server-20150509 (ami-afeb05eb)):
 
 sudo apt-get update
 sudo apt-get install clang llvm-dev autotools-dev dh-autoreconf git
