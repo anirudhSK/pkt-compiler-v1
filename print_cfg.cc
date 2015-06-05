@@ -29,6 +29,9 @@ namespace {
       errs() << "Original CFG\n";
       print_graph(control_flow_graph);
 
+      errs() << "Flipped CFG\n";
+      print_graph(transpose(control_flow_graph));
+
       return false;
     }
    private:
@@ -43,6 +46,25 @@ namespace {
         }
         errs() << "\n";
       }
+    }
+
+    /// Find the graph transpose G', i.e. for every edge u-->v in G,
+    /// there is an edge v-->u in G'
+    /// Returning a Graph is ok because of C++11's move semantics
+    /// and the likely move elision from the compiler
+    Graph transpose(const Graph & graph) const {
+      Graph transpose_graph;
+      for (const auto & node : graph) {
+        for (const auto & neighbor : node.second) {
+          // The original graph has an edge from node to neighbor, flip that around
+          if (transpose_graph.find(neighbor) == transpose_graph.end()) {
+            transpose_graph[neighbor].emplace_back(node.first);
+          } else {
+            transpose_graph.at(neighbor).emplace_back(node.first);
+          }
+        }
+      }
+      return transpose_graph;
     }
 
   };
