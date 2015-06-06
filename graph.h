@@ -11,8 +11,8 @@
 template <class NodeType>
 class Graph {
  public:
-  /// Dominator sets for all nodes in the graph
-  typedef std::map<NodeType, std::set<NodeType>> DominatorSets;
+  /// Dominators for all nodes in the graph
+  typedef std::map<NodeType, std::set<NodeType>> Dominators;
 
   /// Add node alone to existing graph, check that node doesn't already exist
   void add_node(const NodeType & node);
@@ -26,10 +26,10 @@ class Graph {
   /// and the likely move elision from the compiler
   Graph transpose() const;
 
-  /// Compute dominator sets for each node using naive dataflow equations
+  /// Compute dominators for each node using naive dataflow equations
   /// (Algorithm 430: Immediate Predominators in a Directed Graph)
   /// http://en.wikipedia.org/wiki/Dominator_%28graph_theory%29#Algorithms
-  DominatorSets get_dominator_sets(const NodeType & start_node) const;
+  Dominators get_dominators(const NodeType & start_node) const;
 
   /// Print graph to stream
   friend std::ostream & operator<< (std::ostream & out, const Graph<NodeType> & graph) {
