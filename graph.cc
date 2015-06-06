@@ -120,12 +120,14 @@ NodeType Graph<NodeType>::get_idom(const NodeType & node, const Graph<NodeType>:
       continue;
     } else {
       // 3. idom should not dominate some other dominator of node
-      for (const auto & other_doms : dominators.at(node) - std::set<NodeType>{idom_candidate}) {
+      bool dominates_other = false;
+      for (const auto & other_doms : dominators.at(node) - std::set<NodeType>{idom_candidate, node}) {
         if (dominators.at(other_doms).find(idom_candidate) != dominators.at(other_doms).end()) {
-         continue;
+          dominates_other = true;
+          break;
         }
       }
-      idoms.emplace_back(idom_candidate);
+      if (dominates_other == false) idoms.emplace_back(idom_candidate);
     }
   }
   // There has to be exactly one idom (Page 380 of Appel's book)
