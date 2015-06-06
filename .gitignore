@@ -20,6 +20,10 @@ stamp-h1
 .libs/
 *.lo
 *.o
-libjayhawk.la
+*.la
 *.bc
 *.ll
+test-driver
+tests/jayhawk_tests
+*.log
+*.trs
