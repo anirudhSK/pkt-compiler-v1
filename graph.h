@@ -51,6 +51,10 @@ class Graph {
     return out;
   }
 
+  bool operator==(const Graph<NodeType> & b) {
+    return (this->node_set_ == b.node_set_) and (this->succ_map_ == b.succ_map_) and (this->pred_map_ == b.pred_map_);
+  }
+
  private:
   /// Copy over graph and clear out all edges
   Graph<NodeType> copy_and_clear() const;
