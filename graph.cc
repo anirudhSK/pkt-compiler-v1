@@ -1,3 +1,5 @@
+#include <iostream>
+#include <cassert>
 #include <stdexcept>
 #include "graph.h"
 #include "set_idioms.h"
@@ -43,6 +45,21 @@ Graph<NodeType> Graph<NodeType>::transpose() const {
 }
 
 template <class NodeType>
+Graph<NodeType> Graph<NodeType>::dominator_tree(const NodeType & start_node) const {
+  Graph dominator_tree = copy_and_clear();
+
+  // Connect idom(n) to n
+  auto dominators = get_dominators(start_node);
+  for (const auto & node : node_set_ - std::set<NodeType>{start_node}) {
+    std::cout << "Computing idom for " << node << "\n";
+    auto idom = get_idom(node, dominators);
+    dominator_tree.succ_map_.at(idom).emplace_back(node);
+    dominator_tree.pred_map_.at(node).emplace_back(idom);
+  }
+  return dominator_tree;
+}
+
+template <class NodeType>
 Graph<NodeType> Graph<NodeType>::copy_and_clear() const {
   Graph copy(*this);
   // Clear out succ_map_ and pred_map_
@@ -84,6 +101,7 @@ template <class NodeType>
 NodeType Graph<NodeType>::get_idom(const NodeType & node, const Graph<NodeType>::Dominators & dominators) const {
   // Naive implementation of Page 380 of Appel's book
 
+  std::vector<NodeType> idoms;
   // 2. (from page 380) idom must dominate node
   for (const auto & idom_candidate : dominators.at(node)) {
     if (idom_candidate == node) {
@@ -96,7 +114,11 @@ NodeType Graph<NodeType>::get_idom(const NodeType & node, const Graph<NodeType>:
          continue;
         }
       }
-      return idom_candidate;
+      idoms.emplace_back(idom_candidate);
     }
   }
+  // There has to be exactly one idom (Page 380 of Appel's book)
+  std::cout << "idoms size is " << idoms.size() << "\n";
+  assert(idoms.size() == 1);
+  return idoms.front();
 }

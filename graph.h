@@ -26,14 +26,8 @@ class Graph {
   /// and the likely move elision from the compiler
   Graph<NodeType> transpose() const;
 
-  /// Compute dominators for each node using naive dataflow equations
-  /// (Algorithm 430: Immediate Predominators in a Directed Graph)
-  /// http://en.wikipedia.org/wiki/Dominator_%28graph_theory%29#Algorithms
-  Dominators get_dominators(const NodeType & start_node) const;
-
-  /// Get immediate dominator for each node
-  /// Naive implementation of Page 380 of Appel's book
-  NodeType get_idom(const NodeType & node, const Graph<NodeType>::Dominators & dominators) const;
+  /// Compute dominator tree
+  Graph<NodeType> dominator_tree(const NodeType & start_node) const;
 
   /// Print graph to stream
   friend std::ostream & operator<< (std::ostream & out, const Graph<NodeType> & graph) {
@@ -58,6 +52,15 @@ class Graph {
  private:
   /// Copy over graph and clear out all edges
   Graph<NodeType> copy_and_clear() const;
+
+  /// Compute dominators for each node using naive dataflow equations
+  /// (Algorithm 430: Immediate Predominators in a Directed Graph)
+  /// http://en.wikipedia.org/wiki/Dominator_%28graph_theory%29#Algorithms
+  Dominators get_dominators(const NodeType & start_node) const;
+
+  /// Get immediate dominator for each node
+  /// Naive implementation of Page 380 of Appel's book
+  NodeType get_idom(const NodeType & node, const Graph<NodeType>::Dominators & dominators) const;
 
   /// Set of all nodes in the graph
   std::set<NodeType> node_set_ = {};

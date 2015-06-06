@@ -31,7 +31,7 @@ namespace {
 
       std::cout << "Flipped CFG\n" << control_flow_graph.transpose() << "\n";
 
-      auto ret __attribute__ ((unused)) = control_flow_graph.get_dominators(func.begin());
+      std::cout << "Dominator tree\n" << control_flow_graph.dominator_tree(func.begin());
       return false;
     }
    private:
