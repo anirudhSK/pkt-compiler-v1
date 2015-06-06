@@ -52,9 +52,27 @@ Graph<NodeType> Graph<NodeType>::transpose() const {
 template <class NodeType>
 typename Graph<NodeType>::DominatorSets Graph<NodeType>::get_dominator_sets(const NodeType & start_node) const {
   DominatorSets dom_sets;
-  dom_sets.at(start_node) = {start_node};
-  for (const auto & node __attribute__((unused)): (node_set_ - std::set<NodeType>{start_node})) {
-    // TODO
+
+  // Initialize dom sets
+  dom_sets[start_node] = {start_node};
+  for (const auto & node : (node_set_ - std::set<NodeType>{start_node})) {
+    dom_sets[node] = node_set_;
   }
+
+  DominatorSets prev_dom_sets;
+  while (dom_sets != prev_dom_sets) {
+    // Save old dom_sets
+    prev_dom_sets = dom_sets;
+
+    // Run dataflow equations
+    for (const auto & node : (node_set_ - std::set<NodeType>{start_node})) {
+      std::set<NodeType> pred_intersection;
+      for (const auto & pred : pred_map_.at(node)) {
+        pred_intersection = pred_intersection * dom_sets.at(pred);
+      }
+      dom_sets.at(node) = std::set<NodeType>{node} + pred_intersection;
+    }
+  }
+
   return dom_sets;
 }
