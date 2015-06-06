@@ -58,6 +58,9 @@ class Graph {
   /// http://en.wikipedia.org/wiki/Dominator_%28graph_theory%29#Algorithms
   Dominators get_dominators(const NodeType & start_node) const;
 
+  /// Routine to print out dominators
+  void print_dominators(const Dominators & dominators) const;
+
   /// Get immediate dominator for each node
   /// Naive implementation of Page 380 of Appel's book
   NodeType get_idom(const NodeType & node, const Graph<NodeType>::Dominators & dominators) const;

@@ -1,9 +1,19 @@
 #ifndef SET_IDIOMS_H_
 #define SET_IDIOMS_H_
 
+#include <ostream>
 #include <algorithm>
 #include <vector>
 #include <set>
+
+template <class T>
+std::ostream & operator<<(std::ostream & out, std::set<T> & set) {
+  for (const auto & node : set) {
+    out << node << " ";
+  }
+  out << "\n";
+  return out;
+}
 
 // Define more idiomatic set union as '+' operator
 template <class T>

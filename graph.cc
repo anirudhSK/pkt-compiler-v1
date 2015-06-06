@@ -86,7 +86,7 @@ typename Graph<NodeType>::Dominators Graph<NodeType>::get_dominators(const NodeT
 
     // Run dataflow equations
     for (const auto & node : (node_set_ - std::set<NodeType>{start_node})) {
-      std::set<NodeType> pred_intersection;
+      std::set<NodeType> pred_intersection = node_set_;
       for (const auto & pred : pred_map_.at(node)) {
         pred_intersection = pred_intersection * dominators.at(pred);
       }
@@ -95,6 +95,17 @@ typename Graph<NodeType>::Dominators Graph<NodeType>::get_dominators(const NodeT
   }
 
   return dominators;
+}
+
+template <class NodeType>
+void Graph<NodeType>::print_dominators(const Dominators & dominators) const {
+  for (const auto & node : dominators) {
+    std::cout << node.first << " dominated by ";
+    for (const auto & dom_node : node.second) {
+      std::cout << dom_node << " ";
+    }
+    std::cout << "\n";
+  }
 }
 
 template <class NodeType>
