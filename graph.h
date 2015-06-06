@@ -31,6 +31,10 @@ class Graph {
   /// http://en.wikipedia.org/wiki/Dominator_%28graph_theory%29#Algorithms
   Dominators get_dominators(const NodeType & start_node) const;
 
+  /// Get immediate dominator for each node
+  /// Naive implementation of Page 380 of Appel's book
+  NodeType get_idom(const NodeType & node, const Graph<NodeType>::Dominators & dominators) const;
+
   /// Print graph to stream
   friend std::ostream & operator<< (std::ostream & out, const Graph<NodeType> & graph) {
     for (const auto & node : graph.succ_map_) {

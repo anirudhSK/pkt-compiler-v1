@@ -75,3 +75,24 @@ typename Graph<NodeType>::Dominators Graph<NodeType>::get_dominators(const NodeT
 
   return dominators;
 }
+
+template <class NodeType>
+NodeType Graph<NodeType>::get_idom(const NodeType & node, const Graph<NodeType>::Dominators & dominators) const {
+  // Naive implementation of Page 380 of Appel's book
+
+  // 2. (from page 380) idom must dominate node
+  for (const auto & idom_candidate : dominators.at(node)) {
+    if (idom_candidate == node) {
+      // 1. (from page 380) idom can't be node itself
+      continue;
+    } else {
+      // 3. idom should not dominate some other dominator of node
+      for (const auto & other_doms : dominators.at(node) - std::set<NodeType>{idom_candidate}) {
+        if (dominators.at(other_doms).find(idom_candidate) != dominators.at(other_doms).end()) {
+         continue;
+        }
+      }
+      return idom_candidate;
+    }
+  }
+}
