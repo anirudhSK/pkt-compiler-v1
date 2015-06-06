@@ -51,7 +51,6 @@ Graph<NodeType> Graph<NodeType>::dominator_tree(const NodeType & start_node) con
   // Connect idom(n) to n
   auto dominators = get_dominators(start_node);
   for (const auto & node : node_set_ - std::set<NodeType>{start_node}) {
-    std::cout << "Computing idom for " << node << "\n";
     auto idom = get_idom(node, dominators);
     dominator_tree.succ_map_.at(idom).emplace_back(node);
     dominator_tree.pred_map_.at(node).emplace_back(idom);
@@ -131,7 +130,6 @@ NodeType Graph<NodeType>::get_idom(const NodeType & node, const Graph<NodeType>:
     }
   }
   // There has to be exactly one idom (Page 380 of Appel's book)
-  std::cout << "idoms size is " << idoms.size() << "\n";
   assert(idoms.size() == 1);
   return idoms.front();
 }

@@ -19,6 +19,18 @@ TEST(JayhawkTests, DominatorTree) {
   cfg.add_edge(6, 7);
   cfg.add_edge(7, 2);
 
+  Graph<int> dominator_tree = cfg.copy_and_clear();
+
+  // Add edges
+  dominator_tree.add_edge(1, 2);
+  dominator_tree.add_edge(2, 3);
+  dominator_tree.add_edge(2, 4);
+  dominator_tree.add_edge(3, 5);
+  dominator_tree.add_edge(3, 6);
+  dominator_tree.add_edge(3, 7);
+
+
   std::cout << "Original CFG \n" << cfg << "\n";
   std::cout << "Dominator Tree \n" << cfg.dominator_tree(1) << "\n";
+  ASSERT_EQ(cfg.dominator_tree(1) == dominator_tree, true);
 }

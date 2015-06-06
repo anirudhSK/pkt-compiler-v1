@@ -29,6 +29,9 @@ class Graph {
   /// Compute dominator tree
   Graph<NodeType> dominator_tree(const NodeType & start_node) const;
 
+  /// Copy over graph and clear out all edges
+  Graph<NodeType> copy_and_clear() const;
+
   /// Print graph to stream
   friend std::ostream & operator<< (std::ostream & out, const Graph<NodeType> & graph) {
     for (const auto & node : graph.succ_map_) {
@@ -50,9 +53,6 @@ class Graph {
   }
 
  private:
-  /// Copy over graph and clear out all edges
-  Graph<NodeType> copy_and_clear() const;
-
   /// Compute dominators for each node using naive dataflow equations
   /// (Algorithm 430: Immediate Predominators in a Directed Graph)
   /// http://en.wikipedia.org/wiki/Dominator_%28graph_theory%29#Algorithms

@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include "graph.cc"
 
-TEST(JayhawkTests, Jayhawk) {
+TEST(JayhawkTests, FlippedCfg) {
   // Example from Fig. 19.4 b of Appel's book
   Graph<int> cfg;
   for (int i = 1; i <= 7; i++) {
@@ -19,10 +19,7 @@ TEST(JayhawkTests, Jayhawk) {
   cfg.add_edge(6, 7);
   cfg.add_edge(7, 2);
 
-  Graph<int> flipped_cfg;
-  for (int i = 1; i <= 7; i++) {
-    flipped_cfg.add_node(i);
-  }
+  Graph<int> flipped_cfg = cfg.copy_and_clear();
 
   // Add edges
   flipped_cfg.add_edge(2, 1);

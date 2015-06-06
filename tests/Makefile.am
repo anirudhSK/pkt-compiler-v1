@@ -3,8 +3,8 @@ LDADD = -lm $(srcdir)/../third_party/gtest/libgtest.la $(srcdir)/../libjayhawk.l
 
 # Define unit tests
 gtest_main_source = main.cc
-TESTS = jayhawk_tests dominator_tree
+TESTS = flipped_cfg dominator_tree
 check_PROGRAMS = $(TESTS)
 
-jayhawk_tests_SOURCES = $(gtest_main_source) jayhawk_tests.cc
+flipped_cfg_SOURCES = $(gtest_main_source) flipped_cfg.cc
 dominator_tree_SOURCES = $(gtest_main_source) dominator_tree.cc
