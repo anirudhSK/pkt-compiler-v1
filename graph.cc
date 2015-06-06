@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include "graph.h"
+#include "set_idioms.h"
 
 template <class NodeType>
 void Graph<NodeType>::add_node(const NodeType & node) {
@@ -46,4 +47,14 @@ Graph<NodeType> Graph<NodeType>::transpose() const {
     }
   }
   return transpose_graph;
+}
+
+template <class NodeType>
+typename Graph<NodeType>::DominatorSets Graph<NodeType>::get_dominator_sets(const NodeType & start_node) const {
+  DominatorSets dom_sets;
+  dom_sets.at(start_node) = {start_node};
+  for (const auto & node __attribute__((unused)): (node_set_ - std::set<NodeType>{start_node})) {
+    // TODO
+  }
+  return dom_sets;
 }
