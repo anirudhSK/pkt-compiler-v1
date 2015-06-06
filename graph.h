@@ -24,7 +24,7 @@ class Graph {
   /// there is an edge v-->u in G'
   /// Returning a Graph is ok because of C++11's move semantics
   /// and the likely move elision from the compiler
-  Graph transpose() const;
+  Graph<NodeType> transpose() const;
 
   /// Compute dominators for each node using naive dataflow equations
   /// (Algorithm 430: Immediate Predominators in a Directed Graph)
@@ -52,6 +52,9 @@ class Graph {
   }
 
  private:
+  /// Copy over graph and clear out all edges
+  Graph<NodeType> copy_and_clear() const;
+
   /// Set of all nodes in the graph
   std::set<NodeType> node_set_ = {};
 

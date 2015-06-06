@@ -29,14 +29,7 @@ void Graph<NodeType>::add_edge(const NodeType & from_node, const NodeType & to_n
 
 template <class NodeType>
 Graph<NodeType> Graph<NodeType>::transpose() const {
-  // Copy transpose_graph from current graph
-  Graph transpose_graph(*this);
-
-  // Clear out succ_map_ and pred_map_ in transpose_graph
-  for (const auto & node : transpose_graph.node_set_) {
-    transpose_graph.succ_map_.at(node).clear();
-    transpose_graph.pred_map_.at(node).clear();
-  }
+  Graph transpose_graph = copy_and_clear();
 
   // Flip edges
   for (const auto & node : succ_map_) {
@@ -47,6 +40,17 @@ Graph<NodeType> Graph<NodeType>::transpose() const {
     }
   }
   return transpose_graph;
+}
+
+template <class NodeType>
+Graph<NodeType> Graph<NodeType>::copy_and_clear() const {
+  Graph copy(*this);
+  // Clear out succ_map_ and pred_map_
+  for (const auto & node : copy.node_set_) {
+    copy.succ_map_.at(node).clear();
+    copy.pred_map_.at(node).clear();
+  }
+  return copy;
 }
 
 template <class NodeType>
