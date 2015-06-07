@@ -1,4 +1,5 @@
 #include "graph.cc"
+#include "dominator_utility.cc"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Pass.h"
 #include "llvm/IR/Function.h"
@@ -31,7 +32,7 @@ namespace {
 
       std::cout << "Flipped CFG\n" << control_flow_graph.transpose() << "\n";
 
-      std::cout << "Dominator tree\n" << control_flow_graph.dominator_tree(func.begin());
+      std::cout << "Dominator tree\n" << DominatorUtility<BasicBlock*>(control_flow_graph, func.begin()).dominator_tree();
       return false;
     }
    private:

@@ -1,6 +1,7 @@
 #include <iostream>
 #include "gtest/gtest.h"
 #include "graph.cc"
+#include "dominator_utility.cc"
 
 TEST(JayhawkTests, DominatorTree) {
   // Example from Fig. 19.4 b of Appel's book
@@ -31,6 +32,6 @@ TEST(JayhawkTests, DominatorTree) {
 
 
   std::cout << "Original CFG \n" << cfg << "\n";
-  std::cout << "Dominator Tree \n" << cfg.dominator_tree(1) << "\n";
-  ASSERT_EQ(cfg.dominator_tree(1) == dominator_tree, true);
+  std::cout << "Dominator Tree \n" << DominatorUtility<int>(cfg, 1).dominator_tree() << "\n";
+  ASSERT_EQ(DominatorUtility<int>(cfg, 1).dominator_tree() == dominator_tree, true);
 }

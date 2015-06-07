@@ -1,6 +1,9 @@
+#include <map>
+#include <set>
 #include <iostream>
 #include "gtest/gtest.h"
 #include "graph.cc"
+#include "dominator_utility.cc"
 
 TEST(JayhawkTests, DominanceFrontier) {
   // Example from Fig. 19.4 b of Appel's book
@@ -19,10 +22,8 @@ TEST(JayhawkTests, DominanceFrontier) {
   cfg.add_edge(6, 7);
   cfg.add_edge(7, 2);
 
-  Graph<int> dominator_tree = cfg.copy_and_clear();
-
   // Add edges
-  Graph<int>::Dominators expected_dom_frontier;
+  std::map<int, std::set<int>> expected_dom_frontier;
   expected_dom_frontier[1] = {};
   expected_dom_frontier[2] = {2};
   expected_dom_frontier[3] = {2};
@@ -33,7 +34,6 @@ TEST(JayhawkTests, DominanceFrontier) {
 
 
   std::cout << "Original CFG \n" << cfg << "\n";
-  std::cout << "Dominator Tree \n" << cfg.dominator_tree(1) << "\n";
-  std::cout << "Dominance frontier\n";
-  ASSERT_EQ(cfg.dominance_frontier(1) == expected_dom_frontier, true);
+  std::cout << "Dominator Tree \n" << DominatorUtility<int>(cfg, 1).dominator_tree() << "\n";
+  ASSERT_EQ(DominatorUtility<int>(cfg, 1).dominance_frontier() == expected_dom_frontier, true);
 }

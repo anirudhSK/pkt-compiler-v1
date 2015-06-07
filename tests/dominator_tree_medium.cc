@@ -2,6 +2,7 @@
 #include <iostream>
 #include "gtest/gtest.h"
 #include "graph.cc"
+#include "dominator_utility.cc"
 
 TEST(JayhawkTests, DominatorTreeMedium) {
   // Example from http://pages.cs.wisc.edu/~fischer/cs701.f08/lectures/Lecture19.4up.pdf
@@ -39,6 +40,6 @@ TEST(JayhawkTests, DominatorTreeMedium) {
 
 
   std::cout << "Original CFG \n" << cfg << "\n";
-  std::cout << "Dominator Tree \n" << cfg.dominator_tree("Start") << "\n";
-  ASSERT_EQ(cfg.dominator_tree("Start") == dominator_tree, true);
+  std::cout << "Dominator Tree \n" << DominatorUtility<std::string>(cfg, "Start").dominator_tree() << "\n";
+  ASSERT_EQ(DominatorUtility<std::string>(cfg, "Start").dominator_tree() == dominator_tree, true);
 }

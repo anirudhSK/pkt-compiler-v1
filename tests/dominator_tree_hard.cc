@@ -1,6 +1,7 @@
 #include <iostream>
 #include "gtest/gtest.h"
 #include "graph.cc"
+#include "dominator_utility.cc"
 
 TEST(JayhawkTests, DominatorTreeHard) {
   // Harder example from Fig. 18.3 of Appel's book
@@ -44,6 +45,6 @@ TEST(JayhawkTests, DominatorTreeHard) {
   dominator_tree.add_edge(7, 11);
 
   std::cout << "Original CFG \n" << cfg << "\n";
-  std::cout << "Dominator Tree \n" << cfg.dominator_tree(1) << "\n";
-  ASSERT_EQ(cfg.dominator_tree(1) == dominator_tree, true);
+  std::cout << "Dominator Tree \n" << DominatorUtility<int>(cfg, 1).dominator_tree() << "\n";
+  ASSERT_EQ(DominatorUtility<int>(cfg, 1).dominator_tree() == dominator_tree, true);
 }
