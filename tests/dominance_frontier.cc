@@ -22,16 +22,18 @@ TEST(JayhawkTests, DominanceFrontier) {
   Graph<int> dominator_tree = cfg.copy_and_clear();
 
   // Add edges
-  dominator_tree.add_edge(1, 2);
-  dominator_tree.add_edge(2, 3);
-  dominator_tree.add_edge(2, 4);
-  dominator_tree.add_edge(3, 5);
-  dominator_tree.add_edge(3, 6);
-  dominator_tree.add_edge(3, 7);
+  Graph<int>::Dominators expected_dom_frontier;
+  expected_dom_frontier[1] = {};
+  expected_dom_frontier[2] = {2};
+  expected_dom_frontier[3] = {2};
+  expected_dom_frontier[4] = {};
+  expected_dom_frontier[5] = {7};
+  expected_dom_frontier[6] = {7};
+  expected_dom_frontier[7] = {2};
 
 
   std::cout << "Original CFG \n" << cfg << "\n";
   std::cout << "Dominator Tree \n" << cfg.dominator_tree(1) << "\n";
   std::cout << "Dominance frontier\n";
-  cfg.print_dominators(cfg.dominance_frontier(1));
+  ASSERT_EQ(cfg.dominance_frontier(1) == expected_dom_frontier, true);
 }
