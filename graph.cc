@@ -62,7 +62,7 @@ template <class NodeType>
 typename Graph<NodeType>::Dominators Graph<NodeType>::dominance_frontier(const NodeType & start_node) const {
   // TODO: Maybe use a different typedef for dominance_frontier
   Dominators  dominance_frontier;
-  const auto dominator_tree = dominator_tree(start_node);
+  const auto dominator_tree = this->dominator_tree(start_node);
 
   for (const auto & node : node_set_) {
     dominance_frontier[node] = dom_frontier_helper(node, dominator_tree);
@@ -82,7 +82,7 @@ std::set<NodeType> Graph<NodeType>::dom_frontier_helper(const NodeType & node, c
   }
 
   for (const auto & child : dominator_tree.succ_map_.at(node)) {
-    const auto frontier_child = dominance_frontier(child, dominator_tree);
+    const auto frontier_child = dom_frontier_helper(child, dominator_tree);
     for (const auto & w : frontier_child) {
       // w's set of dominators does not contain node
       // w is not node

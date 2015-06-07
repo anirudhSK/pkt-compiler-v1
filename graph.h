@@ -35,6 +35,9 @@ class Graph {
   /// Compute dominance frontier for all nodes (Page 406 of Appel's book)
   Dominators dominance_frontier(const NodeType & start_node) const;
 
+  /// Routine to print out dominators
+  void print_dominators(const Dominators & dominators) const;
+
   /// Print graph to stream
   friend std::ostream & operator<< (std::ostream & out, const Graph<NodeType> & graph) {
     for (const auto & node : graph.succ_map_) {
@@ -62,9 +65,6 @@ class Graph {
   /// (Algorithm 430: Immediate Predominators in a Directed Graph)
   /// http://en.wikipedia.org/wiki/Dominator_%28graph_theory%29#Algorithms
   Dominators get_dominators(const NodeType & start_node) const;
-
-  /// Routine to print out dominators
-  void print_dominators(const Dominators & dominators) const;
 
   /// Get immediate dominator for each node
   /// Naive implementation of Page 380 of Appel's book
