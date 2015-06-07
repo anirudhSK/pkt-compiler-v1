@@ -8,10 +8,11 @@
 
 template <class T>
 std::ostream & operator<<(std::ostream & out, std::set<T> & set) {
+  out << "{";
   for (const auto & node : set) {
     out << node << " ";
   }
-  out << "\n";
+  out << "}";
   return out;
 }
 
