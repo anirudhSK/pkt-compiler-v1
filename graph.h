@@ -49,7 +49,9 @@ class Graph {
   }
 
   bool operator==(const Graph<NodeType> & b) {
-    return (this->node_set_ == b.node_set_) and (this->succ_map_ == b.succ_map_) and (this->pred_map_ == b.pred_map_);
+    return (this->node_set_ == b.node_set_) and
+           (this->succ_map_ == b.succ_map_) and
+           (this->pred_map_ == b.pred_map_);
   }
 
  private:
