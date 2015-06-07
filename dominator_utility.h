@@ -16,8 +16,10 @@ class DominatorUtility {
   /// Convenience typedef for set of nodes
   typedef std::set<NodeType> NodeSet;
 
-  /// Delete copy constructor/assignment to shut up effc++
+  /// Delete copy constructor to shut up effc++
   DominatorUtility(const DominatorUtility<NodeType> &) = delete;
+
+  /// Delete copy assignment to shut up effc++
   DominatorUtility & operator=(const DominatorUtility<NodeType> &) = delete;
 
   /// Constructor for DominatorUtility from Graph object and start node
@@ -37,16 +39,16 @@ class DominatorUtility {
   /// (Algorithm 430: Immediate Predominators in a Directed Graph)
   /// http://en.wikipedia.org/wiki/Dominator_%28graph_theory%29#Algorithms
   static auto construct_dominators(const Graph<NodeType> & t_graph,
-                            const NodeType & t_start_node);
+                                   const NodeType & t_start_node);
 
   /// Construct dom tree use dominators and get_idom
-  /// Connects every node to its idom
+  /// Dom tree connects every node to its idom
   static auto construct_dom_tree(const Graph<NodeType> & t_graph,
                                  const NodeType & t_start_node,
                                  const NodeSetMap & t_dominators);
 
   /// Get immediate dominator for each node
-  /// Naive implementation of Page 380 of Appel's book
+  /// Naive implementation from Page 380 of Appel's book
   static auto get_idom(const NodeType & node, const NodeSetMap & dominators);
 
   /// Helper to compute dominance frontier for one node (Page 406 of Appel's book)
@@ -56,7 +58,7 @@ class DominatorUtility {
                                      const NodeSetMap & t_dominators);
 
   /// Compute dominance frontiers for all nodes by calling
-  /// dom_frontier_helper for each node
+  /// dom_frontier_helper on each node
   static auto construct_dom_frontiers(const Graph<NodeType> & t_graph,
                                       const Graph<NodeType> & t_dom_tree,
                                       const NodeSetMap & t_dominators);
