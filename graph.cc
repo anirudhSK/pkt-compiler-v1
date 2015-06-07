@@ -65,14 +65,20 @@ typename Graph<NodeType>::Dominators Graph<NodeType>::dominance_frontier(const N
   const auto dominator_tree = this->dominator_tree(start_node);
 
   for (const auto & node : node_set_) {
-    dominance_frontier[node] = dom_frontier_helper(node, dominator_tree);
+    dominance_frontier[node] = dom_frontier_helper(node, dominator_tree, start_node);
   }
   return dominance_frontier;
 }
 
 
 template <class NodeType>
-std::set<NodeType> Graph<NodeType>::dom_frontier_helper(const NodeType & node, const Graph<NodeType> & dominator_tree) const {
+std::set<NodeType> Graph<NodeType>::dom_frontier_helper(const NodeType & node, const Graph<NodeType> & dominator_tree, const NodeType & start_node) const {
+  // Memoize results
+  static Dominators dominance_frontier;
+  if (dominance_frontier.find(node) != dominance_frontier.end()) {
+    return dominance_frontier.at(node);
+  }
+
   std::set<NodeType> S;
   for (const auto & y : succ_map_.at(node)) {
     assert(dominator_tree.pred_map_.at(y).size() == 1);
@@ -82,16 +88,20 @@ std::set<NodeType> Graph<NodeType>::dom_frontier_helper(const NodeType & node, c
   }
 
   for (const auto & child : dominator_tree.succ_map_.at(node)) {
-    const auto frontier_child = dom_frontier_helper(child, dominator_tree);
+    const auto frontier_child = dom_frontier_helper(child, dominator_tree, start_node);
     for (const auto & w : frontier_child) {
-      // w's set of dominators does not contain node
-      // w is not node
-      if ((get_dominators(w).find(node) == get_dominators(w).end()) or
+      // if: w's set of dominators does not contain node
+      // if: w is node
+      const auto dom_set = get_dominators(start_node).at(w);
+      if ((dom_set.find(node) == dom_set.end()) or
           (node == w)) {
         S = S + std::set<NodeType>{w};
       }
     }
   }
+  // If we get here, the results were not memoized to begin with
+  assert(dominance_frontier.find(node) == dominance_frontier.end());
+  dominance_frontier[node] = S;
   return S;
 }
 

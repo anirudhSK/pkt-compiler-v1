@@ -71,7 +71,7 @@ class Graph {
   NodeType get_idom(const NodeType & node, const Graph<NodeType>::Dominators & dominators) const;
 
   /// Helper to compute dominance frontier for one node (Page 406 of Appel's book)
-  std::set<NodeType> dom_frontier_helper(const NodeType & node, const Graph<NodeType> & dominator_tree) const;
+  std::set<NodeType> dom_frontier_helper(const NodeType & node, const Graph<NodeType> & dominator_tree, const NodeType & start_node) const;
 
   /// Set of all nodes in the graph
   std::set<NodeType> node_set_ = {};
