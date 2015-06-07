@@ -32,6 +32,9 @@ class Graph {
   /// Copy over graph and clear out all edges
   Graph<NodeType> copy_and_clear() const;
 
+  /// Compute dominance frontier for all nodes (Page 406 of Appel's book)
+  Dominators dominance_frontier(const NodeType & start_node) const;
+
   /// Print graph to stream
   friend std::ostream & operator<< (std::ostream & out, const Graph<NodeType> & graph) {
     for (const auto & node : graph.succ_map_) {
@@ -66,6 +69,9 @@ class Graph {
   /// Get immediate dominator for each node
   /// Naive implementation of Page 380 of Appel's book
   NodeType get_idom(const NodeType & node, const Graph<NodeType>::Dominators & dominators) const;
+
+  /// Helper to compute dominance frontier for one node (Page 406 of Appel's book)
+  std::set<NodeType> dom_frontier_helper(const NodeType & node, const Graph<NodeType> & dominator_tree) const;
 
   /// Set of all nodes in the graph
   std::set<NodeType> node_set_ = {};

@@ -59,6 +59,43 @@ Graph<NodeType> Graph<NodeType>::dominator_tree(const NodeType & start_node) con
 }
 
 template <class NodeType>
+typename Graph<NodeType>::Dominators Graph<NodeType>::dominance_frontier(const NodeType & start_node) const {
+  // TODO: Maybe use a different typedef for dominance_frontier
+  Dominators  dominance_frontier;
+  const auto dominator_tree = dominator_tree(start_node);
+
+  for (const auto & node : node_set_) {
+    dominance_frontier[node] = dom_frontier_helper(node, dominator_tree);
+  }
+  return dominance_frontier;
+}
+
+
+template <class NodeType>
+std::set<NodeType> Graph<NodeType>::dom_frontier_helper(const NodeType & node, const Graph<NodeType> & dominator_tree) const {
+  std::set<NodeType> S;
+  for (const auto & y : succ_map_.at(node)) {
+    assert(dominator_tree.pred_map_.at(y).size() == 1);
+    if (dominator_tree.pred_map_.at(y).front() != node) {
+      S = S + std::set<NodeType>{y};
+    }
+  }
+
+  for (const auto & child : dominator_tree.succ_map_.at(node)) {
+    const auto frontier_child = dominance_frontier(child, dominator_tree);
+    for (const auto & w : frontier_child) {
+      // w's set of dominators does not contain node
+      // w is not node
+      if ((get_dominators(w).find(node) == get_dominators(w).end()) or
+          (node == w)) {
+        S = S + std::set<NodeType>{w};
+      }
+    }
+  }
+  return S;
+}
+
+template <class NodeType>
 Graph<NodeType> Graph<NodeType>::copy_and_clear() const {
   Graph copy(*this);
   // Clear out succ_map_ and pred_map_
