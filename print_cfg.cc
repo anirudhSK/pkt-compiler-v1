@@ -1,10 +1,10 @@
+#include <iostream>
 #include "graph.cc"
 #include "dominator_utility.cc"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Pass.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/InstrTypes.h"
-#include <iostream>
 using namespace llvm;
 
 namespace {
@@ -12,7 +12,6 @@ namespace {
     static char ID;
     PrintCfg() : FunctionPass(ID) {}
     bool runOnFunction(Function & func __attribute__((unused))) override {
-      // map from BasicBlock to a vector of BasicBlocks
       Graph<BasicBlock*> control_flow_graph([] (const BasicBlock * basic_block) {
         std::string str;
         llvm::raw_string_ostream rso(str);
