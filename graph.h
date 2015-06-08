@@ -49,7 +49,7 @@ class Graph {
   }
 
   /// Accessors
-  const std::set<NodeType> & node_set() const { return node_set_; }
+  const auto & node_set() const { return node_set_; }
   const auto & succ_map() const { return succ_map_; }
   const auto & pred_map() const { return pred_map_; }
 
