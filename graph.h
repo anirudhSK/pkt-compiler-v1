@@ -5,12 +5,18 @@
 #include <set>
 #include <vector>
 #include <ostream>
+#include <functional>
+#include <string>
 
 /// Adjacency list representation of graph
 /// Store both out and in edges
 template <class NodeType>
 class Graph {
  public:
+  /// Graph constructor, taking node printer as optional argument
+  Graph<NodeType>(const std::function<std::string(const NodeType)> & node_printer = {})
+    : node_printer_(node_printer) {};
+
   /// Add node alone to existing graph, check that node doesn't already exist
   void add_node(const NodeType & node);
 
@@ -30,10 +36,14 @@ class Graph {
   friend std::ostream & operator<< (std::ostream & out, const Graph<NodeType> & graph) {
     for (const auto & node : graph.succ_map_) {
       if (not node.second.empty()) {
-        out << node.first;
+
+        if (graph.node_printer_) out << graph.node_printer_(node.first);
+        else out << node.first;
+
         out << " ---> ";
         for (const auto & neighbor : node.second) {
-          out << neighbor;
+          if (graph.node_printer_) out << graph.node_printer_(neighbor);
+          else out << neighbor;
           out << " ";
         }
         out << "\n";
@@ -62,6 +72,9 @@ class Graph {
 
   /// Predecessor map from a node to all predecessor nodes (incoming edges)
   std::map<NodeType, std::vector<NodeType>> pred_map_ = {};
+
+  /// Node printer function
+  const std::function<std::string(const NodeType &)> node_printer_;
 };
 
 #endif  // GRAPH_H_

@@ -13,7 +13,12 @@ namespace {
     PrintCfg() : FunctionPass(ID) {}
     bool runOnFunction(Function & func __attribute__((unused))) override {
       // map from BasicBlock to a vector of BasicBlocks
-      Graph<BasicBlock*> control_flow_graph;
+      Graph<BasicBlock*> control_flow_graph([] (const BasicBlock * basic_block) {
+        std::string str;
+        llvm::raw_string_ostream rso(str);
+        basic_block->printAsOperand(rso);
+        return str;
+      });
 
       // Iterate over all basic blocks in the function to compute control-flow graph
       // First pass: Just get nodes alone
