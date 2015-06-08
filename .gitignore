@@ -27,3 +27,9 @@ test-driver
 tests/jayhawk_tests
 *.log
 *.trs
+tests/dominance_frontier
+tests/dominator_tree
+tests/dominator_tree_hard
+tests/dominator_tree_medium
+tests/flipped_cfg
+tests/post_dominance_frontiers
