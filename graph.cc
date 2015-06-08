@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <stdexcept>
+#include <algorithm>
 #include "graph.h"
 #include "set_idioms.h"
 
@@ -27,6 +28,10 @@ void Graph<NodeType>::add_edge(const NodeType & from_node, const NodeType & to_n
 
   succ_map_.at(from_node).emplace_back(to_node);
   pred_map_.at(to_node).emplace_back(from_node);
+
+  // Keep these lists sorted to ensure the equality comparison works
+  std::sort(succ_map_.at(from_node).begin(), succ_map_.at(from_node).end());
+  std::sort(pred_map_.at(to_node).begin(), pred_map_.at(to_node).end());
 }
 
 template <class NodeType>

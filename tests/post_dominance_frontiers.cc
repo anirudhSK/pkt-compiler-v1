@@ -5,7 +5,7 @@
 #include "graph.cc"
 #include "dominator_utility.cc"
 
-TEST(JayhawkTests, ControlDependenceGraph) {
+TEST(JayhawkTests, PostDomFrontiers) {
   // Example from Fig. 19.5 of Appel's book
   Graph<int> cfg;
   for (int i = 1; i <= 7; i++) {

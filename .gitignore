@@ -33,3 +33,4 @@ tests/dominator_tree_hard
 tests/dominator_tree_medium
 tests/flipped_cfg
 tests/post_dominance_frontiers
+tests/control_dependence_graph
