@@ -3,6 +3,8 @@
 // 1. Unify data and control dependence graph to program dependence graph.
 
 #include "control_dependence_graph.h"
+#include "graph.cc"
+#include "dominator_utility.cc"
 
 using namespace llvm;
 
@@ -43,15 +45,15 @@ bool ControlDependenceGraph::runOnFunction(Function & func) {
                                                         exit_node).dominance_frontier();
 
   // Get control dependence graph
-  Graph<BasicBlock*> cdg = flipped_cfg.copy_and_clear();
+  cdg_ = flipped_cfg.copy_and_clear();
   for (const auto & y : postdom_frontier) {
     for (const auto & x : y.second) {
       // Item # 5 on page 426 of Appel's book
-      cdg.add_edge(x, y.first);
+      cdg_.add_edge(x, y.first);
     }
   }
 
-  std::cout << "Control dependence graph \n" << cdg << "\n";
+  std::cout << "Control dependence graph \n" << cdg_ << "\n";
   return false;
 }
 

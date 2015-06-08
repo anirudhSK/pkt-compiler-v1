@@ -10,9 +10,8 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/raw_ostream.h"
+#include "graph.h"
 #include "add_entry_exit_nodes.h"
-#include "graph.cc"
-#include "dominator_utility.cc"
 
 /// Retrieve control dependence graph from CFG
 struct ControlDependenceGraph : public llvm::FunctionPass {
@@ -28,6 +27,10 @@ struct ControlDependenceGraph : public llvm::FunctionPass {
   bool runOnFunction(llvm::Function & func) override;
 
   void getAnalysisUsage(llvm::AnalysisUsage &AU) const override;
+
+  auto cdg() const { return cdg_; }
+ private:
+  Graph<llvm::BasicBlock*> cdg_ = {};
 };
 
 #endif  // CONTROL_DEPENDENCE_GRAPH_H_

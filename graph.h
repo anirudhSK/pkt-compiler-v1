@@ -74,7 +74,7 @@ class Graph {
   std::map<NodeType, std::vector<NodeType>> pred_map_ = {};
 
   /// Node printer function
-  const std::function<std::string(const NodeType &)> node_printer_;
+  std::function<std::string(const NodeType &)> node_printer_;
 };
 
 #endif  // GRAPH_H_
