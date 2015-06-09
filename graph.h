@@ -36,20 +36,17 @@ class Graph {
   /// Print graph to stream
   friend std::ostream & operator<< (std::ostream & out, const Graph<NodeType> & graph) {
     for (const auto & node : graph.succ_map_) {
-      if (not node.second.empty()) {
+      if (graph.node_printer_) out << graph.node_printer_(node.first);
+      else out << node.first;
 
-        if (graph.node_printer_) out << graph.node_printer_(node.first);
-        else out << node.first;
-
-        out << " ---> ";
-        for (const auto & neighbor : node.second) {
-          out << " { ";
-          if (graph.node_printer_) out << graph.node_printer_(neighbor);
-          else out << neighbor;
-          out << " } ";
-        }
-        out << "\n";
+      out << " ---> ";
+      for (const auto & neighbor : node.second) {
+        out << " { ";
+        if (graph.node_printer_) out << graph.node_printer_(neighbor);
+        else out << neighbor;
+        out << " } ";
       }
+      out << "\n";
     }
     return out;
   }
