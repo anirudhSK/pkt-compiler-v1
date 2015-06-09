@@ -20,7 +20,15 @@ bool InstrCtrlDeps::runOnFunction(Function & func) {
       continue;
     } else {
       for (BasicBlock::iterator i = bb->begin(); i != bb->end(); ++i) {
-        icdg.add_node(&*i);
+        if (isa<TerminatorInst>(i)) {
+          assert(isa<ReturnInst>(i) or isa<BranchInst>(i));
+          // Only add return inst, TODO: At some future point return void
+          if (isa<ReturnInst>(i)) {
+            icdg.add_node(&*i);
+          }
+        } else {
+          icdg.add_node(&*i);
+        }
       }
     }
   }
