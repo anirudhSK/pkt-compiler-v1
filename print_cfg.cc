@@ -11,7 +11,7 @@ namespace {
   struct PrintCfg : public FunctionPass {
     static char ID;
     PrintCfg() : FunctionPass(ID) {}
-    bool runOnFunction(Function & func __attribute__((unused))) override {
+    bool runOnFunction(Function & func) override {
       Graph<BasicBlock*> control_flow_graph([] (const BasicBlock * basic_block) {
         std::string str;
         llvm::raw_string_ostream rso(str);
