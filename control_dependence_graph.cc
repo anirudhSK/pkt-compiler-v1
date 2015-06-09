@@ -1,7 +1,3 @@
-// 5. Lower control dependence graph to operator level.
-// 1. Compute data dependence graph at operator level.
-// 1. Unify data and control dependence graph to program dependence graph.
-
 #include "control_dependence_graph.h"
 #include "graph.cc"
 #include "dominator_utility.cc"
