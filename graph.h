@@ -5,6 +5,7 @@
 #include <set>
 #include <vector>
 #include <ostream>
+#include <algorithm>
 #include <functional>
 #include <string>
 
@@ -42,9 +43,10 @@ class Graph {
 
         out << " ---> ";
         for (const auto & neighbor : node.second) {
+          out << " { ";
           if (graph.node_printer_) out << graph.node_printer_(neighbor);
           else out << neighbor;
-          out << " ";
+          out << " } ";
         }
         out << "\n";
       }
@@ -62,6 +64,12 @@ class Graph {
   const auto & node_set() const { return node_set_; }
   const auto & succ_map() const { return succ_map_; }
   const auto & pred_map() const { return pred_map_; }
+
+  /// Check if an edge exists from a to b
+  bool exists_edge(const NodeType & a, const NodeType & b) const {
+    return (std::find(succ_map_.at(a).begin(), succ_map_.at(a).end(), b) != succ_map_.at(a).end() and
+            std::find(pred_map_.at(b).begin(), pred_map_.at(b).end(), a) != pred_map_.at(b).end());
+  }
 
  private:
   /// Set of all nodes in the graph
