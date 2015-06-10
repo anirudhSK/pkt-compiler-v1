@@ -14,22 +14,16 @@ bool InstrCtrlDeps::runOnFunction(Function & func) {
       return str;
   });
 
-  // Get all meaningful instructions. Ignore entry and exit blocks
-  for (Function::iterator bb = func.begin(); bb != func.end(); ++bb) {
-    if (bb->getName() == "entry" or bb->getName() == "exit") {
-      continue;
-    } else {
-      for (BasicBlock::iterator i = bb->begin(); i != bb->end(); ++i) {
-        if (isa<TerminatorInst>(i)) {
-          assert(isa<ReturnInst>(i) or isa<BranchInst>(i));
-          // Only add return inst, TODO: At some future point return void
-          if (isa<ReturnInst>(i)) {
-            icdg.add_node(&*i);
-          }
-        } else {
-          icdg.add_node(&*i);
-        }
+  // Get all instructions.
+  for(auto instr = inst_begin(func); instr != inst_end(func); ++instr) {
+    if (isa<TerminatorInst>(&*instr)) {
+      assert(isa<ReturnInst>(&*instr) or isa<BranchInst>(&*instr));
+      // Only add return inst, TODO: At some future point return void
+      if (isa<ReturnInst>(&*instr)) {
+        icdg.add_node(&*instr);
       }
+    } else {
+      icdg.add_node(&*instr);
     }
   }
 
