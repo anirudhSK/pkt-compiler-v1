@@ -11,7 +11,6 @@
 #include "llvm/IR/Value.h"
 #include "llvm/Support/raw_ostream.h"
 #include "graph.h"
-#include "add_entry_exit_nodes.h"
 
 /// Retrieve control dependence graph from CFG
 struct ControlDependenceGraph : public llvm::FunctionPass {
@@ -31,6 +30,17 @@ struct ControlDependenceGraph : public llvm::FunctionPass {
   auto cdg() const { return cdg_; }
  private:
   Graph<const llvm::BasicBlock*> cdg_ = {};
+
+  /// 1. Add two fake basic blocks: "entry" and "exit".
+  /// 2. Append "exit" block to the block containing the return statement.
+  /// We assume there's only one return, because this pass depends on mergereturn
+  /// 3. Create dummy branch instruction from "entry" to
+  ///    -> first block of actual code and
+  ///    -> exit block created above
+  /// N.B. Bolting on blocks like this can violate the SSA property causing
+  /// a use to dominate an instruction. This is ok,
+  /// because we 'll this code is never parsed; it's just used for analysis.
+  Graph<const llvm::BasicBlock*> augment_cfg(const Graph<const llvm::BasicBlock*> & cfg, const llvm::BasicBlock * start_node);
 };
 
 #endif  // CONTROL_DEPENDENCE_GRAPH_H_
