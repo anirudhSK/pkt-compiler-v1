@@ -30,7 +30,7 @@ struct ControlDependenceGraph : public llvm::FunctionPass {
 
   auto cdg() const { return cdg_; }
  private:
-  Graph<llvm::BasicBlock*> cdg_ = {};
+  Graph<const llvm::BasicBlock*> cdg_ = {};
 };
 
 #endif  // CONTROL_DEPENDENCE_GRAPH_H_

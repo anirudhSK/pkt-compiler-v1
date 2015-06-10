@@ -6,7 +6,7 @@ using namespace llvm;
 
 bool ControlDependenceGraph::runOnFunction(Function & func) {
   // Augmented control flow graph with entry and exit nodes
-  Graph<BasicBlock*> augmented_cfg([] (const BasicBlock * basic_block) {
+  Graph<const BasicBlock*> augmented_cfg([] (const BasicBlock * basic_block) {
       std::string str;
       llvm::raw_string_ostream rso(str);
       basic_block->printAsOperand(rso);
@@ -29,16 +29,16 @@ bool ControlDependenceGraph::runOnFunction(Function & func) {
   auto flipped_cfg = augmented_cfg.transpose();
 
   // Get pointer to exit node
-  BasicBlock* exit_node;
+  const BasicBlock* exit_node;
   for (auto it = func.begin(); it != func.end(); it++) {
     if (it->getName() == "exit") {
       exit_node = it;
-    } 
+    }
   }
 
   // Get post dominance frontier
-  auto postdom_frontier = DominatorUtility<BasicBlock*>(flipped_cfg,
-                                                        exit_node).dominance_frontier();
+  auto postdom_frontier = DominatorUtility<const BasicBlock*>(flipped_cfg,
+                                                              exit_node).dominance_frontier();
 
   // Get control dependence graph
   cdg_ = flipped_cfg.copy_and_clear();

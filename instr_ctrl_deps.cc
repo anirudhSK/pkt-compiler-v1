@@ -7,7 +7,7 @@ using namespace llvm;
 
 bool InstrCtrlDeps::runOnFunction(Function & func) {
   // Instruction Control Dependence Graph
-  Graph<Instruction*> icdg([] (const Instruction * instruction) {
+  Graph<const Instruction*> icdg([] (const Instruction * instruction) {
       std::string str;
       llvm::raw_string_ostream rso(str);
       instruction->print(rso);
