@@ -51,11 +51,12 @@ class Graph {
     return out;
   }
 
-  bool operator==(const Graph<NodeType> & b) {
-    return (this->node_set_ == b.node_set_) and
-           (this->succ_map_ == b.succ_map_) and
-           (this->pred_map_ == b.pred_map_);
-  }
+  /// Used for unit tests that check expected graph output
+  bool operator==(const Graph<NodeType> & b) const;
+
+  /// Graph union,
+  /// we restrict unions to graphs with identical vertex sets
+  Graph<NodeType> operator+(const Graph<NodeType> & b) const;
 
   /// Accessors
   const auto & node_set() const { return node_set_; }

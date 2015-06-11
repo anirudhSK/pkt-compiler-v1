@@ -26,12 +26,44 @@ void Graph<NodeType>::add_edge(const NodeType & from_node, const NodeType & to_n
     throw std::logic_error("to_node doesn't exist in node_set_\n");
   }
 
+  // If edge already exists, return
+  if (std::find(succ_map_.at(from_node).begin(), succ_map_.at(from_node).end(), to_node) != succ_map_.at(from_node).end()) {
+    assert(std::find(pred_map_.at(to_node).begin(), pred_map_.at(to_node).end(), from_node) != pred_map_.at(to_node).end());
+    std::cout << "Warning: edge already exists, ignoring add_edge command\n";
+    return;
+  }
+
   succ_map_.at(from_node).emplace_back(to_node);
   pred_map_.at(to_node).emplace_back(from_node);
 
   // Keep these lists sorted to ensure the equality comparison works
   std::sort(succ_map_.at(from_node).begin(), succ_map_.at(from_node).end());
   std::sort(pred_map_.at(to_node).begin(), pred_map_.at(to_node).end());
+}
+
+template <class NodeType>
+bool Graph<NodeType>::operator==(const Graph<NodeType> & b) const {
+  return (this->node_set_ == b.node_set_) and
+         (this->succ_map_ == b.succ_map_) and
+         (this->pred_map_ == b.pred_map_);
+}
+
+template <class NodeType>
+Graph<NodeType> Graph<NodeType>::operator+(const Graph<NodeType> & b) const {
+  if (this->node_set_ != b.node_set_) {
+    throw std::logic_error("Graph union is only supported on graphs with identical node sets\n");
+  }
+
+  // Copy down nodes, clear out edges
+  Graph<NodeType> result = this->copy_and_clear();
+
+  // Start adding edges
+  for (const auto & graph : {this, &b})
+    for (const auto & node : graph->succ_map_)
+      for (const auto & neighbor : node.second)
+        result.add_edge(node.first, neighbor);
+
+  return result;
 }
 
 template <class NodeType>

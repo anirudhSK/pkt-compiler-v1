@@ -1,4 +1,5 @@
 #include "instr_prog_deps.h"
+#include "graph.cc"
 
 using namespace llvm;
 
