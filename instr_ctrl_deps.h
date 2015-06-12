@@ -23,6 +23,16 @@ struct InstrCtrlDeps: public llvm::FunctionPass {
   /// Specify that we need ControlDependenceGraph to be run
   /// before we run this pass.
   void getAnalysisUsage(llvm::AnalysisUsage &AU) const override;
+
+  const auto icdg() const { return icdg_; }
+ private:
+  // Instruction Control Dependence Graph
+  Graph<const llvm::Instruction*> icdg_ = Graph<const llvm::Instruction*>([] (const llvm::Instruction * instruction) {
+      std::string str;
+      llvm::raw_string_ostream rso(str);
+      instruction->print(rso);
+      return str;
+  });
 };
 
 #endif  // INSTR_CTRL_DEPS_H_
