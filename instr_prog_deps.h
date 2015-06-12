@@ -15,7 +15,13 @@
 struct InstrProgDeps : public llvm::FunctionPass {
   static char ID;
   InstrProgDeps() : llvm::FunctionPass(ID) {}
+
+  /// Unify control and data dependencies
   bool runOnFunction(llvm::Function &F) override;
+
+  /// Specify that InstrCtrlDeps and InstrDataDeps
+  /// are pre-requisites for this pass
+  void getAnalysisUsage(llvm::AnalysisUsage &AU) const;
 };
 
 #endif  // INSTR_PROG_DEPS_H_
