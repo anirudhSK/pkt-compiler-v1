@@ -7,7 +7,7 @@
 #include <set>
 
 template <class T>
-std::ostream & operator<<(std::ostream & out, std::set<T> & set) {
+std::ostream & operator<<(std::ostream & out, const std::set<T> & set) {
   out << "{";
   for (const auto & node : set) {
     out << node << " ";
