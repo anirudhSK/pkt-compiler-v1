@@ -27,6 +27,14 @@ struct InstrProgDeps : public llvm::FunctionPass {
   void getAnalysisUsage(llvm::AnalysisUsage &AU) const;
 
  private:
+  /// Get all non-branch instructions in a given
+  /// function. (TODO: Check this is ok).
+  /// My hunch is that it's only the non-branch functions
+  /// that matter because they are the only ones that do useful
+  /// computation (once you have accounted for data and control
+  /// dependencies between the computational ones).
+  auto get_all_non_branch_inst(const llvm::Function & func) const;
+
   /// Get instruction-level data dependence graph
   /// by using the def-use chains that are already
   /// available as part of the LLVM IR
@@ -54,7 +62,8 @@ struct InstrProgDeps : public llvm::FunctionPass {
   /// Lower control dependences to the level of instructions.
   /// Instruction A is control dependent on Instruction B if its
   /// enclosing basic block BB{A} is control dependent on B's
-  /// enclosing basic block BB{B}. 
+  /// enclosing basic block BB{B}. This generalization is taken
+  /// from Ferrante's paper.
   auto get_instr_ctrl_dep(const llvm::Function & func) const;
 };
 

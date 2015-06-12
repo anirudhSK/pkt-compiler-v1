@@ -9,6 +9,22 @@
 
 using namespace llvm;
 
+auto InstrProgDeps::get_all_non_branch_inst(const Function & func) const {
+  std::vector<const Instruction*> ret;
+  for(auto instr = inst_begin(func); instr != inst_end(func); ++instr) {
+    if (isa<TerminatorInst>(&*instr)) {
+      assert(isa<ReturnInst>(&*instr) or isa<BranchInst>(&*instr));
+      // Only add return inst, TODO: At some future point return void
+      if (isa<ReturnInst>(&*instr)) {
+        ret.emplace_back(&*instr);
+      }
+    } else {
+      ret.emplace_back(&*instr);
+    }
+  }
+  return ret;
+}
+
 auto InstrProgDeps::get_instr_data_dep(const Function & func) const {
   // Instruction-level data dependence graph
   Graph<const llvm::Instruction*> iddg(instr_printer);
@@ -117,17 +133,9 @@ auto InstrProgDeps::get_instr_ctrl_dep(const Function & func) const {
   // Instruction-level control dependence graph
   Graph<const Instruction*> icdg(instr_printer);
 
-  // Get all instructions.
-  for(auto instr = inst_begin(func); instr != inst_end(func); ++instr) {
-    if (isa<TerminatorInst>(&*instr)) {
-      assert(isa<ReturnInst>(&*instr) or isa<BranchInst>(&*instr));
-      // Only add return inst, TODO: At some future point return void
-      if (isa<ReturnInst>(&*instr)) {
-        icdg.add_node(&*instr);
-      }
-    } else {
-      icdg.add_node(&*instr);
-    }
+  // Get all non-branch instructions.
+  for (const auto & inst : get_all_non_branch_inst(func)) {
+    icdg.add_node(inst);
   }
 
   // Get control dependence graph of basic blocks
