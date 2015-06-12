@@ -29,15 +29,16 @@ auto InstrProgDeps::get_instr_data_dep(const Function & func) const {
   // Instruction-level data dependence graph
   Graph<const llvm::Instruction*> iddg(instr_printer);
 
-  for (auto instr = inst_begin(func); instr != inst_end(func); ++instr) {
-    iddg.add_node(&*instr);
+  for (const auto & instr : get_all_non_branch_inst(func)) {
+    iddg.add_node(instr);
   }
 
-  for(auto instr = inst_begin(func); instr != inst_end(func); ++instr) {
-    for(const auto & i : instr->users()){
-      // From definition to use
-      assert(isa<Instruction>(i));
-      iddg.add_edge(&*instr, dyn_cast<Instruction>(i));
+  for (const auto & instr_a : iddg.node_set()) {
+    for (const auto & instr_b : iddg.node_set()) {
+      // if b exists among a's users
+      if (std::find(instr_a->users().begin(), instr_a->users().end(), instr_b) != instr_a->users().end()) {
+        iddg.add_edge(instr_a, instr_b);
+      }
     }
   }
 
