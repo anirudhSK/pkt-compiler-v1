@@ -1,0 +1,20 @@
+iddg is 
+  ret void ---> 
+  %1 = icmp slt i32 undef, 10 --->  {   %. = select i1 %1, i32 2, i32 1 } 
+  %. = select i1 %1, i32 2, i32 1 ---> 
+
+Control dependence graph 
+label %entry --->  { label %0 } 
+label %exit ---> 
+label %0 ---> 
+
+icdg is 
+  ret void ---> 
+  %1 = icmp slt i32 undef, 10 ---> 
+  %. = select i1 %1, i32 2, i32 1 ---> 
+
+Instruction-level prog. dep gh 
+  ret void ---> 
+  %1 = icmp slt i32 undef, 10 --->  {   %. = select i1 %1, i32 2, i32 1 } 
+  %. = select i1 %1, i32 2, i32 1 ---> 
+
