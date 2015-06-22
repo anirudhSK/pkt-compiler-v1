@@ -50,16 +50,17 @@ IfConversion::BranchConditions IfConversion::transfer_fn(const BasicBlock * bb, 
       assert(branch->getNumSuccessors() == 2);
 
       // TODO: 0 and 1 are assumed to point to true and false respectively
-      const auto true_edge  = std::make_pair(branch->getSuccessor(0), in + "(" + value_printer(branch->getCondition()) + " == true"  + ")");
-      const auto false_edge = std::make_pair(branch->getSuccessor(1), in + "(" + value_printer(branch->getCondition()) + " == false" + ")");
+      const auto true_edge  = std::make_pair(branch->getSuccessor(0), in + " and (" + value_printer(branch->getCondition()) + " == true"  + ")");
+      const auto false_edge = std::make_pair(branch->getSuccessor(1), in + " and (" + value_printer(branch->getCondition()) + " == false" + ")");
 
-      std::cout << "true_edge is " << true_edge.second << "\n";
+      std::cout << "true_edge is {" << true_edge.second << "}\n";
+      std::cout << "false_edge is {" << false_edge.second << "}\n";
       return {true_edge, false_edge};
     } else {
       assert(branch->getNumSuccessors() == 1);
       const auto single_outgoing_edge = std::make_pair(branch->getSuccessor(0), in);
 
-      std::cout << "single_outgoing_edge is " << single_outgoing_edge.second << "\n";
+      std::cout << "single_outgoing_edge is {" << single_outgoing_edge.second << "}\n";
       return {single_outgoing_edge};
     }
   } else if (isa<ReturnInst>(bb->getTerminator())) {
@@ -78,7 +79,7 @@ IfConversion::BoolExpr IfConversion::join_fn(const BasicBlock * bb,
     for (const auto & br_edge : br_conds) {
       // If edge points to this basic block, add its condition to a list of or operands
       if (br_edge.first == bb) {
-        in += "or (" + br_edge.second + ")";
+        in += " or (" + br_edge.second + ")";
       }
     }
   }
