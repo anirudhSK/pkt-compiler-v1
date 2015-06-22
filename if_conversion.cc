@@ -1,5 +1,8 @@
-#include "if_conversion.h"
+#include <iostream>
+#include "llvm/IR/Instructions.h"
 #include "llvm/Analysis/CFG.h"
+#include "utility_functions.h"
+#include "if_conversion.h"
 
 using namespace llvm;
 
@@ -19,7 +22,7 @@ bool IfConversion::runOnFunction(Function & func) {
   }
 
   // Now start at the first block and propagate path conditions
-  bb_walk(& func.getEntryBlock());
+  transfer_fn(& func.getEntryBlock(), "");
 
   return false;
 }
@@ -29,6 +32,36 @@ void IfConversion::bb_walk(const BasicBlock * bb, const Value * incoming_conditi
     bb_walk(bb->getTerminator()->getSuccessor(i));
   }
   errs() << "Finished bb_walk for bb " << *bb << "\n";
+}
+
+IfConversion::BranchConditions IfConversion::transfer_fn(const BasicBlock * bb, const BoolExpr & in) {
+  const auto * terminator_inst = bb->getTerminator();
+
+  if (isa<BranchInst>(terminator_inst)) {
+    const auto * branch = dyn_cast<BranchInst>(terminator_inst);
+    if (branch->isConditional()) {
+      assert(branch->getNumSuccessors() == 2);
+
+      // TODO: 0 and 1 are assumed to point to true and false respectively
+      const auto true_edge  = std::make_pair(branch->getSuccessor(0), in + "(" + value_printer(branch->getCondition()) + " == true"  + ")");
+      const auto false_edge = std::make_pair(branch->getSuccessor(1), in + "(" + value_printer(branch->getCondition()) + " == false" + ")");
+
+      std::cout << "true_edge is " << true_edge.second << "\n";
+      return std::make_pair(true_edge, false_edge);
+    } else {
+      assert(branch->getNumSuccessors() == 1);
+      const auto single_outgoing_edge = std::make_pair(branch->getSuccessor(0), in);
+
+      std::cout << "single_outgoing_edge is " << single_outgoing_edge.second << "\n";
+      return std::make_pair(single_outgoing_edge, single_outgoing_edge);
+    }
+  } else if (isa<ReturnInst>(bb->getTerminator())) {
+    assert(false);
+    return BranchConditions();
+  } else {
+    assert(false);
+    return BranchConditions();
+  }
 }
 
 char IfConversion::ID = 0;
