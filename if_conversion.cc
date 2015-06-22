@@ -43,6 +43,7 @@ bool IfConversion::runOnFunction(Function & func) {
 
 IfConversion::BranchConditions IfConversion::transfer_fn(const BasicBlock * bb, const BoolExpr & in) const {
   const auto * terminator_inst = bb->getTerminator();
+  std::cout << "Incoming edge " << in << "\n";
 
   if (isa<BranchInst>(terminator_inst)) {
     const auto * branch = dyn_cast<BranchInst>(terminator_inst);
