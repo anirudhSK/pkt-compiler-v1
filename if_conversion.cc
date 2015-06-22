@@ -18,7 +18,17 @@ bool IfConversion::runOnFunction(Function & func) {
     throw std::invalid_argument("Supplied function body has a loop\n");
   }
 
+  // Now start at the first block and propagate path conditions
+  bb_walk(& func.getEntryBlock());
+
   return false;
+}
+
+void IfConversion::bb_walk(const BasicBlock * bb) {
+  for (unsigned int i = 0; i < bb->getTerminator()->getNumSuccessors(); i++) {
+    bb_walk(bb->getTerminator()->getSuccessor(i));
+  }
+  errs() << "Finished bb_walk for bb " << *bb << "\n";
 }
 
 char IfConversion::ID = 0;

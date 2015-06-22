@@ -11,6 +11,8 @@ struct IfConversion : public llvm::FunctionPass {
   static char ID;
   IfConversion() : llvm::FunctionPass(ID) {}
   bool runOnFunction(llvm::Function & func) override;
+ private:
+  void bb_walk(const llvm::BasicBlock * bb);
 };
 
 #endif  // IF_CONVERSION_H_
