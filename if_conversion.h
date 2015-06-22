@@ -16,8 +16,8 @@ struct IfConversion : public llvm::FunctionPass {
   /// A single edge to a basic block on a path condition
   typedef std::pair<const llvm::BasicBlock *, const BoolExpr> BranchEdge;
 
-  /// A pair of branch edges to represent a branch
-  typedef std::pair<BranchEdge, BranchEdge> BranchConditions;
+  /// A vector of branch edges to represent a branch
+  typedef std::vector<BranchEdge> BranchConditions;
 
   /// LLVM book keeping
   static char ID;
@@ -32,7 +32,13 @@ struct IfConversion : public llvm::FunctionPass {
   void bb_walk(const llvm::BasicBlock * bb, const llvm::Value * incoming_condition = {});
 
   /// Transfer function for path condition propagation
-  BranchConditions transfer_fn(const llvm::BasicBlock * bb, const BoolExpr & in);
+  BranchConditions transfer_fn(const llvm::BasicBlock * bb, const BoolExpr & in) const;
+
+  /// Join function for path condition propagation
+  /// Arguments are current basic block bb
+  /// and a vector of outgoing BranchConditions one for each predecessor
+  BoolExpr join_fn(const llvm::BasicBlock * bb, const std::vector<BranchConditions> & outp) const;
+
 };
 
 #endif  // IF_CONVERSION_H_

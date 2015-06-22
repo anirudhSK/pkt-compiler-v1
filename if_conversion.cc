@@ -34,7 +34,7 @@ void IfConversion::bb_walk(const BasicBlock * bb, const Value * incoming_conditi
   errs() << "Finished bb_walk for bb " << *bb << "\n";
 }
 
-IfConversion::BranchConditions IfConversion::transfer_fn(const BasicBlock * bb, const BoolExpr & in) {
+IfConversion::BranchConditions IfConversion::transfer_fn(const BasicBlock * bb, const BoolExpr & in) const {
   const auto * terminator_inst = bb->getTerminator();
 
   if (isa<BranchInst>(terminator_inst)) {
@@ -47,13 +47,13 @@ IfConversion::BranchConditions IfConversion::transfer_fn(const BasicBlock * bb, 
       const auto false_edge = std::make_pair(branch->getSuccessor(1), in + "(" + value_printer(branch->getCondition()) + " == false" + ")");
 
       std::cout << "true_edge is " << true_edge.second << "\n";
-      return std::make_pair(true_edge, false_edge);
+      return {true_edge, false_edge};
     } else {
       assert(branch->getNumSuccessors() == 1);
       const auto single_outgoing_edge = std::make_pair(branch->getSuccessor(0), in);
 
       std::cout << "single_outgoing_edge is " << single_outgoing_edge.second << "\n";
-      return std::make_pair(single_outgoing_edge, single_outgoing_edge);
+      return {single_outgoing_edge};
     }
   } else if (isa<ReturnInst>(bb->getTerminator())) {
     assert(false);
@@ -62,6 +62,20 @@ IfConversion::BranchConditions IfConversion::transfer_fn(const BasicBlock * bb, 
     assert(false);
     return BranchConditions();
   }
+}
+
+IfConversion::BoolExpr IfConversion::join_fn(const BasicBlock * bb,
+                                             const std::vector<BranchConditions> & outp) const {
+  BoolExpr in;
+  for (const auto & br_conds : outp) {
+    for (const auto & br_edge : br_conds) {
+      // If edge points to this basic block, add its condition to a list of or operands
+      if (br_edge.first == bb) {
+        in += "(" + br_edge.second + ") or ";
+      }
+    }
+  }
+  return in;
 }
 
 char IfConversion::ID = 0;
