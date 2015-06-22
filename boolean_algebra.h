@@ -41,12 +41,17 @@ class Conjunction {
   }
 
   friend std::ostream & operator<< (std::ostream & out, const Conjunction & clause) {
-    out << " (";
-    for (uint32_t i = 0; i < clause.atoms_.size() - 1; i++) {
-      out << clause.atoms_.at(i) << " and ";
+    if (clause.atoms_.empty()) {
+      return out;
+    } else {
+     assert(clause.atoms_.size() >= 1);
+     out << " (";
+     for (uint32_t i = 0; i < clause.atoms_.size() - 1; i++) {
+       out << clause.atoms_.at(i) << " and ";
+     }
+     out << clause.atoms_.at(clause.atoms_.size() - 1) << ") ";
+     return out;
     }
-    out << clause.atoms_.at(clause.atoms_.size() - 1) << ") ";
-    return out;
   };
 
  private:
@@ -83,12 +88,17 @@ class Dnf {
   }
 
   friend std::ostream & operator<< (std::ostream & out, const Dnf & dnf) {
-    out << " {";
-    for (uint32_t i = 0; i < dnf.clauses_.size() - 1; i++) {
-      out << dnf.clauses_.at(i) << " or ";
+    if (dnf.clauses_.empty()) {
+      return out;
+    } else {
+      assert(dnf.clauses_.size() >= 1);
+      out << " {";
+      for (uint32_t i = 0; i < dnf.clauses_.size() - 1; i++) {
+        out << dnf.clauses_.at(i) << " or ";
+      }
+      out << dnf.clauses_.at(dnf.clauses_.size() - 1) << "} ";
+      return out;
     }
-    out << dnf.clauses_.at(dnf.clauses_.size() - 1) << "} ";
-    return out;
   };
 
  private:
