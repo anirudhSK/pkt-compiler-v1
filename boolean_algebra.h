@@ -10,7 +10,7 @@ class Atom {
  public:
   Atom(const std::string & t_name, const bool t_negated) : var_name_(t_name), negated_(t_negated) {}
   friend std::ostream & operator<< (std::ostream & out, const Atom & atom) {
-    out << atom.negated_ ? ("~" + atom.var_name_) : atom.var_name_;
+    out << (atom.negated_ ? ("~" + atom.var_name_) : atom.var_name_);
     return out;
   };
 
