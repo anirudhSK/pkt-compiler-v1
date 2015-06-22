@@ -12,7 +12,7 @@ struct IfConversion : public llvm::FunctionPass {
   IfConversion() : llvm::FunctionPass(ID) {}
   bool runOnFunction(llvm::Function & func) override;
  private:
-  void bb_walk(const llvm::BasicBlock * bb);
+  void bb_walk(const llvm::BasicBlock * bb, const llvm::Value * incoming_condition = {});
 };
 
 #endif  // IF_CONVERSION_H_

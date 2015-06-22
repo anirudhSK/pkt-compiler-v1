@@ -24,7 +24,7 @@ bool IfConversion::runOnFunction(Function & func) {
   return false;
 }
 
-void IfConversion::bb_walk(const BasicBlock * bb) {
+void IfConversion::bb_walk(const BasicBlock * bb, const Value * incoming_condition __attribute__ ((unused))) {
   for (unsigned int i = 0; i < bb->getTerminator()->getNumSuccessors(); i++) {
     bb_walk(bb->getTerminator()->getSuccessor(i));
   }
