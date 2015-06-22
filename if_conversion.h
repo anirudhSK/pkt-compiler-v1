@@ -8,11 +8,12 @@
 #include "llvm/IR/Function.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/IR/InstIterator.h"
+#include "boolean_algebra.h"
 
 struct IfConversion : public llvm::FunctionPass {
  public:
   /// Type for storing boolean expressions
-  typedef std::string BoolExpr;
+  typedef Dnf BoolExpr;
 
   /// A single edge to a basic block on a path condition
   typedef std::pair<const llvm::BasicBlock *, const BoolExpr> BranchEdge;
