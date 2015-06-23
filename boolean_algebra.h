@@ -68,18 +68,18 @@ class Conjunction {
   std::vector<Atom> atoms_ = {};
 };
 
-// Disjunctive normal form for Boolean expressions
+/// Disjunctive normal form for Boolean expressions
 class Dnf {
  public:
+  /// OR of Dnf with a Conjunction, just append to vector
   Dnf operator+(const Conjunction & t_conjunction) const {
-    // OR of Dnf with a Conjunction, just append to vector
     auto ret(*this);
     ret.clauses_.emplace_back(t_conjunction);
     return ret;
   }
 
+  /// OR of 2 Dnfs, just concatenate vectors
   Dnf operator+(const Dnf & t_dnf) const {
-    // OR of 2 Dnfs, just concatenate vectors
     auto ret(*this);
     for (const auto & clause : t_dnf.clauses_) {
       ret.clauses_.emplace_back(clause);
@@ -87,9 +87,9 @@ class Dnf {
     return ret;
   }
 
+  /// Use the fact that AND distributes over ORs,
+  /// and AND each clause in turn
   Dnf operator*(const Conjunction & t_conjunction) const {
-    // Use the fact that AND distributes over ORs,
-    // and AND each clause in turn
     auto ret(*this);
     for (auto & clause : ret.clauses_) {
       clause = clause * t_conjunction;
