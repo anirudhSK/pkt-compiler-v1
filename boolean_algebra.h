@@ -8,15 +8,25 @@
 // Single atom: Variable or negated variable
 class Atom {
  public:
-  Atom(const std::string & t_name, const bool t_negated) : var_name_(t_name), negated_(t_negated) {}
+  Atom(const std::string & t_name, const bool t_negated) : var_name_(t_name), negated_(t_negated), is_literal_(false), value_(false) {}
+  static Atom make_literal(const bool & t_value) {
+    Atom ret = Atom("LITERAL", false);
+    ret.is_literal_ = true;
+    ret.value_ = t_value;
+    return ret;
+  }
   friend std::ostream & operator<< (std::ostream & out, const Atom & atom) {
     out << (atom.negated_ ? ("~" + atom.var_name_) : atom.var_name_);
     return out;
   };
+  bool get_value() const { return value_; }
+  bool is_literal() const { return is_literal_; }
 
  private:
   const std::string var_name_;
   const bool negated_;
+  bool is_literal_;
+  bool value_;
 };
 
 // Conjunction: AND of Atoms,
