@@ -35,14 +35,8 @@ class Conjunction {
  public:
   explicit Conjunction(const Atom & t_atom) { atoms_.emplace_back(t_atom); }
 
-  Conjunction operator*(const Atom & t_atom) const {
-    auto ret(*this);
-    ret.atoms_.emplace_back(t_atom);
-    return ret;
-  }
-
+  /// AND of two conjunctions, just concatenate vectors
   Conjunction operator*(const Conjunction & t_conjunction) const {
-    // AND of two conjunctions, just concatenate vectors
     auto ret(*this);
     for (const auto & atom : t_conjunction.atoms_) {
       ret.atoms_.emplace_back(atom);
