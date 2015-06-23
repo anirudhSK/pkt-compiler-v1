@@ -10,7 +10,7 @@ class Atom {
  public:
   Atom(const std::string & t_name, const bool t_negated) : var_name_(t_name), negated_(t_negated), is_literal_(false), value_(false) {}
   static Atom make_literal(const bool & t_value) {
-    Atom ret = Atom("LITERAL", false);
+    Atom ret = Atom("LITERAL" + std::to_string(t_value), false);
     ret.is_literal_ = true;
     ret.value_ = t_value;
     return ret;

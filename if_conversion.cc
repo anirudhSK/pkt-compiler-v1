@@ -76,7 +76,7 @@ IfConversion::BranchConditions IfConversion::transfer_fn(const BasicBlock * bb, 
 IfConversion::BoolExpr IfConversion::join_fn(const BasicBlock * bb,
                                              const std::vector<BranchConditions> & outp) const {
   BoolExpr in;
-  in = in + Conjunction(Atom("LITERAL_TRUE", false));
+  in = in + Conjunction(Atom::make_literal(false));
   for (const auto & br_conds : outp) {
     for (const auto & br_edge : br_conds) {
       // If edge points to this basic block, add its condition to a list of or operands
