@@ -76,16 +76,20 @@ IfConversion::BranchConditions IfConversion::transfer_fn(const BasicBlock * bb, 
 IfConversion::BoolExpr IfConversion::join_fn(const BasicBlock * bb,
                                              const std::vector<BranchConditions> & outp) const {
   BoolExpr in;
-  in = in + Conjunction(Atom::make_literal(false));
-  for (const auto & br_conds : outp) {
-    for (const auto & br_edge : br_conds) {
-      // If edge points to this basic block, add its condition to a list of or operands
-      if (br_edge.first == bb) {
-        in = in + br_edge.second;
+  if (outp.empty()) {
+    return in + Conjunction(Atom::make_literal(true));
+  } else {
+    BoolExpr in;
+    for (const auto & br_conds : outp) {
+      for (const auto & br_edge : br_conds) {
+        // If edge points to this basic block, add its condition to a list of or operands
+        if (br_edge.first == bb) {
+          in = in + br_edge.second;
+        }
       }
     }
+    return in;
   }
-  return in;
 }
 
 char IfConversion::ID = 0;
