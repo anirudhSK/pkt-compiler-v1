@@ -37,7 +37,6 @@ class Conjunction {
  public:
   /// Check if Conjunction degenerates to a single atom and call is_literal on it
   bool is_literal(const bool t_val) const {
-    std::cout << "Inside Conjunction::is_literal " << *this << "\n";
     assert(not atoms_.empty());
     return atoms_.size() == 1 ? atoms_.front().is_literal(t_val) : false;
   }
@@ -46,16 +45,17 @@ class Conjunction {
 
   /// Simplify Conjunction by constant folding
   void simplify() {
-    std::cout << "Within Conjunction::simplify, conjunction at beginning " << *this << "\n";
-    for (const auto & atom : atoms_) {
-      std::cout << "Atom " << atom << " is_literal(true)? " << atom.is_literal(true) << "\n";
-    }
-
     // Remove true atoms.
     atoms_.erase(std::remove_if(atoms_.begin(), atoms_.end(),
                                 [] (const Atom & atom)
                                 { return atom.is_literal(true); }),
                                 atoms_.end());
+
+    if (atoms_.empty()) {
+      // remove + erase deleted all atoms, all of which were true
+      // So, leave behind one true Atom
+      atoms_ = {Atom::make_literal(true)};
+    }
 
     // If there's a false atom, short circuit.
     auto it = std::find_if(atoms_.begin(), atoms_.end(),
@@ -65,7 +65,6 @@ class Conjunction {
     if (check_false) {
       atoms_ = {Atom::make_literal(false)};
     }
-    std::cout << "Within Conjunction::simplify, conjunction at end " << *this << "\n";
   }
 
   /// AND of two conjunctions, just concatenate vectors
@@ -102,7 +101,6 @@ class Dnf {
   void simplify() {
     // Simplify individual clauses
     for (auto & clause : clauses_) {
-      std::cout << "Iterating through yet another clause\n";
       clause.simplify();
     }
 
@@ -111,6 +109,12 @@ class Dnf {
                    [] (const Conjunction & clause)
                    { return clause.is_literal(false); }),
                    clauses_.end());
+
+    if (clauses_.empty()) {
+      // remove + erase deleted all clauses, all of which were false
+      // So, leave behind one false clause
+      clauses_ = {Conjunction(Atom::make_literal(false))};
+    }
 
     // Short if there are true clauses
     auto it = std::find_if(clauses_.begin(), clauses_.end(),
