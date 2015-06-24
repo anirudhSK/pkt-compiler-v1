@@ -51,8 +51,13 @@ IfConversion::BranchConditions IfConversion::transfer_fn(const BasicBlock * bb, 
       assert(branch->getNumSuccessors() == 2);
 
       // TODO: 0 and 1 are assumed to point to true and false respectively
-      const auto true_edge  = std::make_pair(branch->getSuccessor(0), in * Conjunction(Atom(value_printer(branch->getCondition()), true)));
-      const auto false_edge = std::make_pair(branch->getSuccessor(1), in * Conjunction(Atom(value_printer(branch->getCondition()), false)));
+      auto true_condition = in * Conjunction(Atom(value_printer(branch->getCondition()), true));
+      true_condition.simplify();
+      const auto true_edge  = std::make_pair(branch->getSuccessor(0), true_condition);
+
+      auto false_condition = in * Conjunction(Atom(value_printer(branch->getCondition()), false));
+      false_condition.simplify();
+      const auto false_edge = std::make_pair(branch->getSuccessor(1), false_condition);
 
       std::cout << "true_edge is " << true_edge.second << "\n";
       std::cout << "false_edge is " << false_edge.second << "\n";
@@ -77,9 +82,10 @@ IfConversion::BoolExpr IfConversion::join_fn(const BasicBlock * bb,
                                              const std::vector<BranchConditions> & outp) const {
   BoolExpr in;
   if (outp.empty()) {
-    return in + Conjunction(Atom::make_literal(true));
+    in = in + Conjunction(Atom::make_literal(true));
+    in.simplify();
+    return in;
   } else {
-    BoolExpr in;
     for (const auto & br_conds : outp) {
       for (const auto & br_edge : br_conds) {
         // If edge points to this basic block, add its condition to a list of or operands
@@ -88,6 +94,7 @@ IfConversion::BoolExpr IfConversion::join_fn(const BasicBlock * bb,
         }
       }
     }
+    in.simplify();
     return in;
   }
 }

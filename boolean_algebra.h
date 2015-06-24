@@ -1,6 +1,7 @@
 #ifndef BOOLEAN_ALGEBRA_H_
 #define BOOLEAN_ALGEBRA_H_
 
+#include <algorithm>
 #include <ostream>
 #include <vector>
 #include <string>
@@ -19,12 +20,13 @@ class Atom {
     out << (atom.pristine_ ? atom.var_name_ : ("~" + atom.var_name_));
     return out;
   };
-  bool get_value() const { return value_; }
-  bool is_literal() const { return is_literal_; }
+
+  /// Check if it's a literal and if so, check if its value matches t_val
+  bool is_literal(const bool t_val) const { return is_literal_ ? value_ == t_val : false; }
 
  private:
-  const std::string var_name_;
-  const bool pristine_;
+  std::string var_name_;
+  bool pristine_;
   bool is_literal_;
   bool value_;
 };
@@ -33,7 +35,38 @@ class Atom {
 // each atom either stands by itself or is negated
 class Conjunction {
  public:
+  /// Check if Conjunction degenerates to a single atom and call is_literal on it
+  bool is_literal(const bool t_val) const {
+    std::cout << "Inside Conjunction::is_literal " << *this << "\n";
+    assert(not atoms_.empty());
+    return atoms_.size() == 1 ? atoms_.front().is_literal(t_val) : false;
+  }
+
   explicit Conjunction(const Atom & t_atom) { atoms_.emplace_back(t_atom); }
+
+  /// Simplify Conjunction by constant folding
+  void simplify() {
+    std::cout << "Within Conjunction::simplify, conjunction at beginning " << *this << "\n";
+    for (const auto & atom : atoms_) {
+      std::cout << "Atom " << atom << " is_literal(true)? " << atom.is_literal(true) << "\n";
+    }
+
+    // Remove true atoms.
+    atoms_.erase(std::remove_if(atoms_.begin(), atoms_.end(),
+                                [] (const Atom & atom)
+                                { return atom.is_literal(true); }),
+                                atoms_.end());
+
+    // If there's a false atom, short circuit.
+    auto it = std::find_if(atoms_.begin(), atoms_.end(),
+                           [] (const Atom & atom)
+                           { return (atom.is_literal(false)); });
+    bool check_false = (it != atoms_.end());
+    if (check_false) {
+      atoms_ = {Atom::make_literal(false)};
+    }
+    std::cout << "Within Conjunction::simplify, conjunction at end " << *this << "\n";
+  }
 
   /// AND of two conjunctions, just concatenate vectors
   Conjunction operator*(const Conjunction & t_conjunction) const {
@@ -65,6 +98,30 @@ class Conjunction {
 /// Disjunctive normal form for Boolean expressions
 class Dnf {
  public:
+  /// Simplify Dnf by constant folding
+  void simplify() {
+    // Simplify individual clauses
+    for (auto & clause : clauses_) {
+      std::cout << "Iterating through yet another clause\n";
+      clause.simplify();
+    }
+
+    // Remove false clauses
+    clauses_.erase(std::remove_if(clauses_.begin(), clauses_.end(),
+                   [] (const Conjunction & clause)
+                   { return clause.is_literal(false); }),
+                   clauses_.end());
+
+    // Short if there are true clauses
+    auto it = std::find_if(clauses_.begin(), clauses_.end(),
+                           [] (const Conjunction & clause)
+                           { return clause.is_literal(true); });
+    bool check_true = (it != clauses_.end());
+    if (check_true) {
+      clauses_ = {Conjunction(Atom::make_literal(true))};
+    }
+  }
+
   /// OR of Dnf with a Conjunction, just append to vector
   Dnf operator+(const Conjunction & t_conjunction) const {
     auto ret(*this);
