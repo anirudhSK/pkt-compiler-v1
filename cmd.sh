@@ -1,0 +1,24 @@
+g++ --std=c++11 `llvm-config --cxxflags` -isystem /usr/lib/llvm-3.5/include/ tooling_sample.cpp \
+	-L /usr/lib/llvm-3.5/lib/  \
+	-Wl,--start-group \
+	-lclangAST \
+	-lclangAnalysis \
+	-lclangBasic \
+	-lclangDriver \
+	-lclangEdit \
+	-lclangFrontend \
+	-lclangFrontendTool \
+	-lclangLex \
+	-lclangParse \
+	-lclangSema \
+	-lclangEdit \
+	-lclangASTMatchers \
+	-lclangRewrite \
+	-lclangRewriteFrontend \
+	-lclangStaticAnalyzerFrontend \
+	-lclangStaticAnalyzerCheckers \
+	-lclangStaticAnalyzerCore \
+	-lclangSerialization \
+	-lclangTooling \
+	-Wl,--end-group \
+	`llvm-config --ldflags --libs --system-libs`
