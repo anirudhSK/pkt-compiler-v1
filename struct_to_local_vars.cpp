@@ -1,4 +1,5 @@
 #include <string>
+#include <iostream>
 
 #include "clang/AST/AST.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -17,24 +18,37 @@ using namespace clang::tooling;
 
 static llvm::cl::OptionCategory StructToLocalVars("Replace structs with local variables");
 
-class IfStmtHandler : public MatchFinder::MatchCallback {
+class MemberExprHandler : public MatchFinder::MatchCallback {
  public:
-  IfStmtHandler(Replacements *Replace) : Replace(Replace) {}
+  /// Constructor: Pass Refactoring tool as argument
+  MemberExprHandler(Replacements *Replace) : Replace(Replace) {}
 
+  /// Callback whenever there's a match
   virtual void run(const MatchFinder::MatchResult &Result) override {
-    // The matched 'if' statement was bound to 'ifStmt'.
-    if (const IfStmt *IfS = Result.Nodes.getNodeAs<clang::IfStmt>("ifStmt")) {
-      const Stmt *Then = IfS->getThen();
-      Replacement Rep(*(Result.SourceManager), Then->getLocStart(), 0,
-                      "// the 'if' part\n");
-      Replace->insert(Rep);
+    const MemberExpr *member_expr = Result.Nodes.getNodeAs<clang::MemberExpr>("memberExpr");
+    llvm::errs() << "Within run\n";
+    assert(member_expr != nullptr);
+    const auto * base        = member_expr->getBase();
+    const auto * member_decl = member_expr->getMemberDecl();
+    llvm::errs() << "Base is ";
 
-      if (const Stmt *Else = IfS->getElse()) {
-        Replacement Rep(*(Result.SourceManager), Else->getLocStart(), 0,
-                        "// the 'else' part\n");
-        Replace->insert(Rep);
-      }
-    }
+    // Required for pretty printing
+    clang::LangOptions LangOpts;
+    LangOpts.CPlusPlus = true;
+    clang::PrintingPolicy Policy(LangOpts);
+
+    base->printPretty(llvm::errs(), nullptr, Policy);
+//      const Stmt *Then = IfS->getThen();
+//      Replacement Rep(*(Result.SourceManager), Then->getLocStart(), 0,
+//                      "// the 'if' part\n");
+//      Replace->insert(Rep);
+//
+//      if (const Stmt *Else = IfS->getElse()) {
+//        Replacement Rep(*(Result.SourceManager), Else->getLocStart(), 0,
+//                        "// the 'else' part\n");
+//        Replace->insert(Rep);
+//      }
+//    }
   }
 
  private:
@@ -46,15 +60,12 @@ int main(int argc, const char **argv) {
   RefactoringTool Tool(op.getCompilations(), op.getSourcePathList());
 
   // Set up AST matcher callbacks.
-  IfStmtHandler HandlerForIf(&Tool.getReplacements());
+  MemberExprHandler HandlerForMemberExpr(&Tool.getReplacements());
 
   MatchFinder Finder;
-  Finder.addMatcher(ifStmt().bind("ifStmt"), &HandlerForIf);
+  Finder.addMatcher(memberExpr().bind("memberExpr"), &HandlerForMemberExpr);
 
-  // Run the tool and collect a list of replacements. We could call runAndSave,
-  // which would destructively overwrite the files with their new contents.
-  // However, for demonstration purposes it's interesting to show the
-  // replacements.
+  // Run the tool and collect a list of replacements.
   if (int Result = Tool.run(newFrontendActionFactory(&Finder).get())) {
     return Result;
   }
