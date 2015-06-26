@@ -46,6 +46,13 @@ class MemberExprHandler : public MatchFinder::MatchCallback {
     llvm::errs() << " ";
 
     llvm::errs() << "\n";
+
+    // Now, create replacement text
+    Replacement Rep(*(Result.SourceManager), base->getLocStart(), 0,
+                    "// Modifying base of struct operation\n");
+
+    // Insert into this Replace
+    Replace->insert(Rep);
   }
 
  private:
