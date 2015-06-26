@@ -25,30 +25,27 @@ class MemberExprHandler : public MatchFinder::MatchCallback {
 
   /// Callback whenever there's a match
   virtual void run(const MatchFinder::MatchResult &Result) override {
-    const MemberExpr *member_expr = Result.Nodes.getNodeAs<clang::MemberExpr>("memberExpr");
     llvm::errs() << "Within run\n";
-    assert(member_expr != nullptr);
-    const auto * base        = member_expr->getBase();
-    const auto * member_decl = member_expr->getMemberDecl();
-    llvm::errs() << "Base is ";
 
     // Required for pretty printing
     clang::LangOptions LangOpts;
     LangOpts.CPlusPlus = true;
     clang::PrintingPolicy Policy(LangOpts);
 
+    const MemberExpr *member_expr = Result.Nodes.getNodeAs<clang::MemberExpr>("memberExpr");
+    assert(member_expr != nullptr);
+    const auto * base        = member_expr->getBase();
+    const auto * member_decl = member_expr->getMemberDecl();
+
+    llvm::errs() << "Base is ";
     base->printPretty(llvm::errs(), nullptr, Policy);
-//      const Stmt *Then = IfS->getThen();
-//      Replacement Rep(*(Result.SourceManager), Then->getLocStart(), 0,
-//                      "// the 'if' part\n");
-//      Replace->insert(Rep);
-//
-//      if (const Stmt *Else = IfS->getElse()) {
-//        Replacement Rep(*(Result.SourceManager), Else->getLocStart(), 0,
-//                        "// the 'else' part\n");
-//        Replace->insert(Rep);
-//      }
-//    }
+    llvm::errs() << " ";
+
+    llvm::errs() << "Member is ";
+    member_decl->printName(llvm::errs());
+    llvm::errs() << " ";
+
+    llvm::errs() << "\n";
   }
 
  private:
