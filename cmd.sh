@@ -1,4 +1,4 @@
-g++ --std=c++11 `llvm-config --cxxflags` -isystem /usr/lib/llvm-3.5/include/ $1 \
+g++ --std=c++11 -isystem /usr/lib/llvm-3.5/include/ $1 \
 	-L /usr/lib/llvm-3.5/lib/  \
 	-Wl,--start-group \
 	-lclangAST \
