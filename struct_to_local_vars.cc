@@ -40,11 +40,11 @@ class MemberExprHandler : public MatchFinder::MatchCallback {
     auto type_name = member_decl->getType().getAsString();
 
     // Create declaration as a string, TODO: there's probably a more hygeinic approach
-    decl_strings_.emplace(type_name + " " + clang_value_decl_printer(member_decl) + ";\n");
+    decl_strings_.emplace(type_name + " " + clang_stmt_printer(base) + "__" + clang_value_decl_printer(member_decl)+ ";\n");
 
     // Now, create replacement text
     Replacement Rep(*(Result.SourceManager), member_expr,
-                    clang_stmt_printer(base) + clang_value_decl_printer(member_decl));
+                    clang_stmt_printer(base) + "__" + clang_value_decl_printer(member_decl));
 
     // Insert into this Replace
     Replace.insert(Rep);
