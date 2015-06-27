@@ -10,6 +10,7 @@
 #include "clang/Tooling/Refactoring.h"
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/raw_ostream.h"
+#include "clang_utility_functions.h"
 
 using namespace clang;
 using namespace clang::ast_matchers;
@@ -21,42 +22,27 @@ static llvm::cl::OptionCategory StructToLocalVars("Replace structs with local va
 class MemberExprHandler : public MatchFinder::MatchCallback {
  public:
   /// Constructor: Pass Refactoring tool as argument
-  MemberExprHandler(Replacements *Replace) : Replace(Replace) {}
+  MemberExprHandler(Replacements & t_replace) : Replace(t_replace) {}
 
   /// Callback whenever there's a match
   virtual void run(const MatchFinder::MatchResult &Result) override {
     llvm::errs() << "Within run\n";
-
-    // Required for pretty printing
-    clang::LangOptions LangOpts;
-    LangOpts.CPlusPlus = true;
-    clang::PrintingPolicy Policy(LangOpts);
 
     const MemberExpr *member_expr = Result.Nodes.getNodeAs<clang::MemberExpr>("memberExpr");
     assert(member_expr != nullptr);
     const auto * base        = member_expr->getBase();
     const auto * member_decl = member_expr->getMemberDecl();
 
-    llvm::errs() << "Base is ";
-    base->printPretty(llvm::errs(), nullptr, Policy);
-    llvm::errs() << " ";
-
-    llvm::errs() << "Member is ";
-    member_decl->printName(llvm::errs());
-    llvm::errs() << " ";
-
-    llvm::errs() << "\n";
-
     // Now, create replacement text
-    Replacement Rep(*(Result.SourceManager), base->getLocStart(), 0,
-                    "// Modifying base of struct operation\n");
+    Replacement Rep(*(Result.SourceManager), member_expr,
+                    clang_stmt_printer(base) + clang_value_decl_printer(member_decl));
 
     // Insert into this Replace
-    Replace->insert(Rep);
+    Replace.insert(Rep);
   }
 
  private:
-  Replacements *Replace;
+  Replacements & Replace;
 };
 
 int main(int argc, const char **argv) {
@@ -64,13 +50,13 @@ int main(int argc, const char **argv) {
   RefactoringTool Tool(op.getCompilations(), op.getSourcePathList());
 
   // Set up AST matcher callbacks.
-  MemberExprHandler HandlerForMemberExpr(&Tool.getReplacements());
+  MemberExprHandler HandlerForMemberExpr(Tool.getReplacements());
 
   MatchFinder Finder;
   Finder.addMatcher(memberExpr().bind("memberExpr"), &HandlerForMemberExpr);
 
   // Run the tool and collect a list of replacements.
-  if (int Result = Tool.run(newFrontendActionFactory(&Finder).get())) {
+  if (int Result = Tool.runAndSave(newFrontendActionFactory(&Finder).get())) {
     return Result;
   }
 
