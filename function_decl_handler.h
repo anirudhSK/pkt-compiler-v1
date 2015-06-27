@@ -1,6 +1,8 @@
 #ifndef FUNCTION_DECL_HANDLER_H_
 #define FUNCTION_DECL_HANDLER_H_
 
+#include <string>
+#include <set>
 #include "clang/AST/AST.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
@@ -20,17 +22,29 @@ using namespace clang::tooling;
 class FunctionDeclHandler : public MatchFinder::MatchCallback {
  public:
   /// Constructor: Pass Refactoring tool as argument
-  FunctionDeclHandler(Replacements & t_replace) : Replace(t_replace) {}
+  FunctionDeclHandler(Replacements & t_replace, const std::set<std::string> & t_decl_strings) : Replace(t_replace), decl_strings_(t_decl_strings) {}
 
   /// Callback whenever there's a match
   virtual void run(const MatchFinder::MatchResult &Result) override {
-    std::cout << "Within FunctionDeclHandler::run\n";
     const FunctionDecl *function_decl_expr = Result.Nodes.getNodeAs<clang::FunctionDecl>("functionDecl");
     assert(function_decl_expr != nullptr);
+
+    // Concatenate all declarations
+    std::string all_decls = "";
+    for (const auto & decl : decl_strings_)
+      all_decls += decl;
+
+    // Now, create replacement text
+    Replacement Rep(*(Result.SourceManager), function_decl_expr->getLocStart(), 0,
+                    all_decls);
+
+    // Insert into this Replace
+    Replace.insert(Rep);
   }
 
  private:
   Replacements & Replace;
+  const std::set<std::string> decl_strings_;
 };
 
 #endif  // FUNCTION_DECL_HANDLER_H_

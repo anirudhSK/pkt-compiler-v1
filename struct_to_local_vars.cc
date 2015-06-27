@@ -23,11 +23,8 @@ static llvm::cl::OptionCategory StructToLocalVars("Replace structs with local va
 
 class MemberExprHandler : public MatchFinder::MatchCallback {
  public:
-  /// Print out all declarations
-  void print_all_decls() const {
-    for (const auto & decl : decl_strings_)
-      llvm::outs() << decl;
-  }
+  /// Get all declarations
+  auto get_decls() const { return decl_strings_; }
 
   /// Constructor: Pass Refactoring tool as argument
   MemberExprHandler(Replacements & t_replace) : Replace(t_replace) {}
@@ -66,23 +63,18 @@ int main(int argc, const char **argv) {
   MemberExprHandler member_expr_handler(Tool.getReplacements());
   MatchFinder find_member_expr;
   find_member_expr.addMatcher(memberExpr().bind("memberExpr"), &member_expr_handler);
+  Tool.run(newFrontendActionFactory(&find_member_expr).get());
 
   // Set up AST matcher callback for function declaration
-  FunctionDeclHandler function_decl_handler(Tool.getReplacements());
+  FunctionDeclHandler function_decl_handler(Tool.getReplacements(), member_expr_handler.get_decls());
   MatchFinder find_function_decl;
   find_function_decl.addMatcher(functionDecl().bind("functionDecl"), &function_decl_handler);
-
-  // Run the tool and collect a list of replacements.
-  Tool.run(newFrontendActionFactory(&find_member_expr).get());
-  Tool.run(newFrontendActionFactory(&find_member_expr).get());
+  Tool.run(newFrontendActionFactory(&find_function_decl).get());
 
   llvm::outs() << "Replacements collected by the tool:\n";
   for (auto &r : Tool.getReplacements()) {
     llvm::outs() << r.toString() << "\n";
   }
-
-  llvm::outs() << "New declarations\n";
-  member_expr_handler.print_all_decls();
 
   return 0;
 }
