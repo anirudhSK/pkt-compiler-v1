@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <set>
 
 #include "clang/AST/AST.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -21,17 +22,28 @@ static llvm::cl::OptionCategory StructToLocalVars("Replace structs with local va
 
 class MemberExprHandler : public MatchFinder::MatchCallback {
  public:
+  /// Print out all declarations
+  void print_all_decls() const {
+    for (const auto & decl : decl_strings_)
+      llvm::outs() << decl;
+  }
+
   /// Constructor: Pass Refactoring tool as argument
   MemberExprHandler(Replacements & t_replace) : Replace(t_replace) {}
 
   /// Callback whenever there's a match
   virtual void run(const MatchFinder::MatchResult &Result) override {
-    llvm::errs() << "Within run\n";
-
     const MemberExpr *member_expr = Result.Nodes.getNodeAs<clang::MemberExpr>("memberExpr");
     assert(member_expr != nullptr);
     const auto * base        = member_expr->getBase();
     const auto * member_decl = member_expr->getMemberDecl();
+
+    // Get type name of member_decl
+    auto type_name = member_decl->getType().getAsString();
+    llvm::outs() << "Type of member_decl is " << type_name << "\n";
+
+    // Create declaration as a string, TODO: there's probably a more hygeinic approach
+    decl_strings_.emplace(type_name + " " + clang_value_decl_printer(member_decl) + "\n");
 
     // Now, create replacement text
     Replacement Rep(*(Result.SourceManager), member_expr,
@@ -43,6 +55,7 @@ class MemberExprHandler : public MatchFinder::MatchCallback {
 
  private:
   Replacements & Replace;
+  std::set<std::string> decl_strings_;
 };
 
 int main(int argc, const char **argv) {
@@ -64,6 +77,9 @@ int main(int argc, const char **argv) {
   for (auto &r : Tool.getReplacements()) {
     llvm::outs() << r.toString() << "\n";
   }
+
+  llvm::outs() << "New declarations\n";
+  HandlerForMemberExpr.print_all_decls();
 
   return 0;
 }
