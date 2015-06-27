@@ -12,6 +12,7 @@
 #include "clang/Tooling/Tooling.h"
 #include "llvm/Support/raw_ostream.h"
 #include "clang_utility_functions.h"
+#include "function_decl_handler.h"
 
 using namespace clang;
 using namespace clang::ast_matchers;
@@ -40,10 +41,9 @@ class MemberExprHandler : public MatchFinder::MatchCallback {
 
     // Get type name of member_decl
     auto type_name = member_decl->getType().getAsString();
-    llvm::outs() << "Type of member_decl is " << type_name << "\n";
 
     // Create declaration as a string, TODO: there's probably a more hygeinic approach
-    decl_strings_.emplace(type_name + " " + clang_value_decl_printer(member_decl) + "\n");
+    decl_strings_.emplace(type_name + " " + clang_value_decl_printer(member_decl) + ";\n");
 
     // Now, create replacement text
     Replacement Rep(*(Result.SourceManager), member_expr,
@@ -62,16 +62,19 @@ int main(int argc, const char **argv) {
   CommonOptionsParser op(argc, argv, StructToLocalVars);
   RefactoringTool Tool(op.getCompilations(), op.getSourcePathList());
 
-  // Set up AST matcher callbacks.
-  MemberExprHandler HandlerForMemberExpr(Tool.getReplacements());
+  // Set up AST matcher callbacks for member expressions
+  MemberExprHandler member_expr_handler(Tool.getReplacements());
+  MatchFinder find_member_expr;
+  find_member_expr.addMatcher(memberExpr().bind("memberExpr"), &member_expr_handler);
 
-  MatchFinder Finder;
-  Finder.addMatcher(memberExpr().bind("memberExpr"), &HandlerForMemberExpr);
+  // Set up AST matcher callback for function declaration
+  FunctionDeclHandler function_decl_handler(Tool.getReplacements());
+  MatchFinder find_function_decl;
+  find_function_decl.addMatcher(functionDecl().bind("functionDecl"), &function_decl_handler);
 
   // Run the tool and collect a list of replacements.
-  if (int Result = Tool.runAndSave(newFrontendActionFactory(&Finder).get())) {
-    return Result;
-  }
+  Tool.runAndSave(newFrontendActionFactory(&find_member_expr).get());
+  Tool.runAndSave(newFrontendActionFactory(&find_member_expr).get());
 
   llvm::outs() << "Replacements collected by the tool:\n";
   for (auto &r : Tool.getReplacements()) {
@@ -79,7 +82,7 @@ int main(int argc, const char **argv) {
   }
 
   llvm::outs() << "New declarations\n";
-  HandlerForMemberExpr.print_all_decls();
+  member_expr_handler.print_all_decls();
 
   return 0;
 }
