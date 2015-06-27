@@ -1,4 +1,4 @@
-g++ --std=c++11 -isystem /usr/lib/llvm-3.5/include/ $@ \
+g++ --std=c++14 -isystem /usr/lib/llvm-3.5/include/ $@ \
 	-L /usr/lib/llvm-3.5/lib/  \
 	-Wl,--start-group \
 	-lclangAST \
