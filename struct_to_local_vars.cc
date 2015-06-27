@@ -73,8 +73,8 @@ int main(int argc, const char **argv) {
   find_function_decl.addMatcher(functionDecl().bind("functionDecl"), &function_decl_handler);
 
   // Run the tool and collect a list of replacements.
-  Tool.runAndSave(newFrontendActionFactory(&find_member_expr).get());
-  Tool.runAndSave(newFrontendActionFactory(&find_member_expr).get());
+  Tool.run(newFrontendActionFactory(&find_member_expr).get());
+  Tool.run(newFrontendActionFactory(&find_member_expr).get());
 
   llvm::outs() << "Replacements collected by the tool:\n";
   for (auto &r : Tool.getReplacements()) {
