@@ -10,7 +10,9 @@
 #include "clang/Tooling/CommonOptionsParser.h"
 #include "clang/Tooling/Refactoring.h"
 #include "clang/Tooling/Tooling.h"
+#include "clang/Tooling/ReplacementsYaml.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/YAMLTraits.h"
 #include "clang_utility_functions.h"
 #include "function_decl_handler.h"
 
@@ -71,10 +73,16 @@ int main(int argc, const char **argv) {
   find_function_decl.addMatcher(functionDecl().bind("functionDecl"), &function_decl_handler);
   Tool.run(newFrontendActionFactory(&find_function_decl).get());
 
-  llvm::outs() << "Replacements collected by the tool:\n";
-  for (auto &r : Tool.getReplacements()) {
-    llvm::outs() << r.toString() << "\n";
-  }
+  // Write into YAML object
+  TranslationUnitReplacements replace_yaml;
+  replace_yaml.MainSourceFile = argv[1];
+  replace_yaml.Context = "some context";
+  for (const auto &r : Tool.getReplacements())
+    replace_yaml.Replacements.push_back(r);
+
+  // Serialize to stdout
+  llvm::yaml::Output yaml_stream(llvm::outs());
+  yaml_stream << replace_yaml;
 
   return 0;
 }
