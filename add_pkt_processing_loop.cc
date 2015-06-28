@@ -34,7 +34,7 @@ class PacketProcessingCodeHandler : public MatchFinder::MatchCallback {
 
     /// Find location just after opening brace of function body
     auto start_loc = Lexer::getLocForEndOfToken(function_decl_expr->getBody()->getLocStart(), 0, *Result.SourceManager, Result.Context->getLangOpts());
-    Replacement rep_start(*(Result.SourceManager), start_loc, 0, "\n while(true) {\n");
+    Replacement rep_start(*(Result.SourceManager), start_loc, 0, "\n while(1) {\n");
     Replace.insert(rep_start);
 
     /// Find location just before closing brace of function body
