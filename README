@@ -1,9 +1,11 @@
-To build (Steps tested on Ubuntu 14.10, using EC2 AMI: ubuntu-utopic-14.10-amd64-server-20150509 (ami-afeb05eb)):
+To build (Steps tested on Ubuntu 14.10):
 
 sudo apt-get update
-sudo apt-get install clang llvm-dev autotools-dev dh-autoreconf git
+sudo apt-get install clang llvm-dev libclang-dev autotools-dev dh-autoreconf git
 git clone https://github.com/anirudhsk/jayhawk
 cd jayhawk
 ./autogen.sh
 ./configure
 make
+
+To build clang tools, use the clang.sh script.
