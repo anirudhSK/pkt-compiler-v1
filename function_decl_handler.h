@@ -31,12 +31,11 @@ class FunctionDeclHandler : public MatchFinder::MatchCallback {
     assert(function_decl_expr != nullptr);
 
     // Concatenate all declarations
-    std::string all_decls = "";
+    std::string all_decls = "\n";
     for (const auto & decl : decl_strings_)
-      all_decls += decl;
+      all_decls += "  " + decl;
 
     // Now, create replacement text
-    std::cout << "First stmt in function " << clang_stmt_printer(function_decl_expr->getBody()) << "\n";
     auto start_loc = Lexer::getLocForEndOfToken(function_decl_expr->getBody()->getLocStart(), 0, *Result.SourceManager, Result.Context->getLangOpts());
     Replacement Rep(*(Result.SourceManager), start_loc, 0,
                     all_decls);
