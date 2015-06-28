@@ -3,6 +3,7 @@
 
 #include <string>
 #include <set>
+#include "clang/Lex/Lexer.h"
 #include "clang/AST/AST.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
@@ -35,7 +36,9 @@ class FunctionDeclHandler : public MatchFinder::MatchCallback {
       all_decls += decl;
 
     // Now, create replacement text
-    Replacement Rep(*(Result.SourceManager), function_decl_expr->getLocStart(), 0,
+    std::cout << "First stmt in function " << clang_stmt_printer(function_decl_expr->getBody()) << "\n";
+    auto start_loc = Lexer::getLocForEndOfToken(function_decl_expr->getBody()->getLocStart(), 0, *Result.SourceManager, Result.Context->getLangOpts());
+    Replacement Rep(*(Result.SourceManager), start_loc, 0,
                     all_decls);
 
     // Insert into this Replace
