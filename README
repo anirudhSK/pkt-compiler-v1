@@ -9,3 +9,5 @@ cd jayhawk
 make
 
 To build clang tools, use the clang.sh script.
+
+This has been superseded by https://github.com/anirudhSK/domino
